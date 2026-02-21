@@ -8,56 +8,56 @@ export default async function handler(req, res) {
             return res.status(405).json({ error: 'Método no permitido' });
         }
 
-        //Recibir y limpiar mensaje
         const userMessage = (req.body.message || "").trim();
         if (!userMessage) {
             return res.status(400).json({ text: "Por favor escribe un mensaje." });
         }
-
         console.log("Mensaje recibido:", userMessage);
 
-        //Verificar primero la respuesta local (nombre, hora, clima)
+        // Respuesta local primero
         const localResponse = await getLocalResponse(userMessage);
         if (localResponse) {
-            console.log("Respuesta local detectada:", localResponse);
+            console.log("Respuesta local:", localResponse);
             return res.status(200).json({ text: localResponse });
         }
 
-        // Validar que la API key exista
-        if (!process.env.OPENAI_API_KEY) {
-            console.error("API key de OpenAI no configurada");
-            return res.status(500).json({ text: "API key de OpenAI no configurada" });
+        // Validar API key de Google Gemini
+        if (!process.env.GEMINI_API_KEY) {
+            console.error("API key de Gemini no configurada");
+            return res.status(500).json({ text: "API key de Gemini no configurada" });
         }
 
-        //Si no hay respuesta local, enviar a OpenAI
-        console.log("No se detectó respuesta local, enviando a OpenAI...");
+        console.log("Enviando mensaje a Google Gemini...");
 
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
-            },
-            body: JSON.stringify({
-                model: "gpt-4o-mini",
-                messages: [
-                    { role: "system", content: "Eres un asistente útil y amable." },
-                    { role: "user", content: userMessage },
-                ],
-                max_tokens: 200,
-            }),
-        });
+        // Llamada al endpoint de Google Generative Language
+        const googleResponse = await fetch(
+            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateText?key=" +
+            process.env.GEMINI_API_KEY,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    prompt: {
+                        text: userMessage
+                    },
+                    // Opciones de máximo output
+                    maxOutputTokens: 200
+                }),
+            }
+        );
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error HTTP de OpenAI:", response.status, errorText);
-            return res.status(500).json({ text: `Error de OpenAI: ${errorText}` });
+        if (!googleResponse.ok) {
+            const errorText = await googleResponse.text();
+            console.error("Error HTTP Gemini:", googleResponse.status, errorText);
+            return res.status(500).json({ text: `Error de Gemini: ${errorText}` });
         }
 
-        const data = await response.json();
-        const text = data.choices?.[0]?.message?.content?.trim() || "No tengo respuesta";
+        const data = await googleResponse.json();
+        const text = data.candidates?.[0]?.outputText?.trim() || "No tengo respuesta";
 
-        console.log("Respuesta de OpenAI:", text);
+        console.log("Respuesta de Gemini:", text);
         res.status(200).json({ text });
 
     } catch (error) {
