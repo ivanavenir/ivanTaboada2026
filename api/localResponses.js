@@ -2,246 +2,104 @@ import fetch from "node-fetch";
 
 export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Palabras clave
-export const spanishKeywords = [
-    "cómo te llamas", "como te llamas", "cual es tu nombre", "tu nombre",
-    "como te llaman", "como te dicen", "quién eres", "quien eres", "tu nombre es",
-    "me puedes decir tu nombre"
-];
+// --- NUEVAS PALABRAS CLAVE ---
+export const creatorKeywords = ["quien te creo", "quien es tu creador", "quien te programo", "who created you", "who is your creator"];
+export const ageKeywords = ["cuantos años tienes", "tu edad", "how old are you", "your age"];
+export const petKeywords = ["tienes mascotas", "mascotas", "do you have pets", "pet names"];
+export const moodKeywords = ["como estas", "como te sientes", "how are you", "how are you doing"];
+export const foodKeywords = ["comida favorita", "que te gusta comer", "favorite food", "what do you like to eat"];
+export const musicKeywords = ["musica favorita", "que musica escuchas", "favorite music", "what music do you like"];
+export const locationKeywords = ["de donde eres", "donde vives", "where are you from", "where do you live"];
+export const goodbyeKeywords = ["adios", "chao", "hasta luego", "bye", "goodbye", "see you"];
 
-export const englishKeywords = [
-    "what's your name", "what is your name", "your name", "what are you called",
-    "what do they call you", "who are you", "your name is", "can you tell me your name"
-];
+// --- DICCIONARIO DE RESPUESTAS ---
+const responses = {
+    mood: {
+        es: ["¡Todo excelente por acá! Con mucha energía para platicar.", "¡Muy bien! Feliz de ayudarte.", "Todo genial, ¿y tú qué tal?"],
+        en: ["I'm doing great! Ready to chat with you.", "Pretty good! How about you?", "Everything is awesome, thanks for asking!"]
+    },
+    food: {
+        es: ["Me encantan los tacos al pastor, ¡son lo mejor!", "La pizza y el sushi son mis favoritos.", "Soy fan de la comida mexicana, especialmente los chilaquiles."],
+        en: ["I love tacos al pastor, they are the best!", "Pizza and sushi are my top favorites.", "I'm a huge fan of Mexican food, especially chilaquiles!"]
+    },
+    music: {
+        es: ["Escucho mucho Trap y Rock, ¡me encanta el ritmo!", "El Trap es lo mío, pero un buen Rock nunca falla.", "Me gusta descubrir beats nuevos de Trap."],
+        en: ["I listen to a lot of Trap and Rock music!", "Trap is my thing, but a good Rock song is always great.", "I love discovering new Trap beats."]
+    },
+    location: {
+        es: ["Soy de la Ciudad de México, ¡la capital de los tacos!", "Vivo en el mundo digital, pero mi creador es de México.", "CDMX es mi hogar."],
+        en: ["I'm from Mexico City!", "I live in the digital world, but my creator is from Mexico.", "CDMX is my home."]
+    },
+    goodbye: {
+        es: ["¡Hasta luego! Cuídate mucho.", "¡Nos vemos! Fue un gusto hablar contigo.", "¡Chao! Aquí estaré si me necesitas."],
+        en: ["Goodbye! Take care.", "See you later! It was nice talking to you.", "Bye! I'll be here if you need me."]
+    }
+};
 
-export const timeKeywords = [
-    "qué hora es", "me puedes decir la hora", "hora actual", "dame la hora", "cual es la hora",
-    "la hora", "qué hora tenemos", "puedes decirme la hora", "hora por favor", "me dices la hora",
-    "sabes la hora", "qué hora tienes", "qué hora son",
-    "what time is it", "current time", "tell me the time", "the time",
-    "can you tell me the time", "time now", "what's the time", "do you know the time", "give me the time"
-];
+const hobbiesResponses = {
+    es: ["Me encanta crear música, especialmente trap!", "Disfruto mucho jugar videojuegos.", "Programar es mi pasatiempo favorito."],
+    en: ["I love creating music, especially trap!", "I really enjoy playing video games.", "Programming is my favorite hobby."]
+};
 
-export const weatherKeywords = [
-    "qué temperatura hace", "cómo está el clima", "temperatura actual", "la temperatura", "qué clima hace",
-    "cómo está el tiempo", "dime la temperatura", "dame la temperatura", "dame el clima", "dime el clima",
-    "sabes la temperatura", "sabes el clima", "temperatura por favor", "clima actual", "qué temperatura hay",
-    "current temperature", "what's the weather", "how's the weather", "the weather", "weather now",
-    "current weather", "what's the temperature", "give me the weather", "give me the temperature",
-    "temperature now", "tell me the temperature"
-];
-
-export const dateKeywords = [
-    "qué día es", "qué fecha es", "dame la fecha", "cual es la fecha",
-    "today's date", "what is the date", "give me the date", "current date"
-];
-
-export const ageKeywords = [
-    "cuántos años tienes", "cuantos años tienes", "qué edad tienes", "que edad tienes", "tu edad",
-    "dime tu edad", "cuál es tu edad", "cual es tu edad",
-    "how old are you", "what's your age", "what is your age", "your age"
-];
-
-export const creatorKeywords = [
-    "quien te creo", "quien es tu creador", "quien te programo", "quien te hizo",
-    "quien es tu dueño", "quien es tu desarrollador", "quien es ivan",
-    "who created you", "who is your creator", "who programmed you", "who made you"
-];
-
-export const hobbiesKeywords = [
-    "qué te gusta hacer", "cuáles son tus hobbies", "qué haces en tu tiempo libre", "qué te gusta",
-    "qué te entretiene", "cómo pasas tu tiempo libre", "qué actividades disfrutas", "qué haces para divertirte",
-    "tienes algún hobby", "qué hobbies tienes", "qué haces cuando estás libre", "qué te apasiona",
-    "qué te interesa hacer", "qué te gusta hacer en tu tiempo libre", "qué aficiones tienes",
-    "what do you like to do", "what are your hobbies", "what do you do in your free time",
-    "what do you enjoy", "how do you spend your free time", "what activities do you like",
-    "what do you do for fun", "do you have any hobbies", "what hobbies do you have",
-    "what do you like doing", "what interests you", "what are you passionate about",
-    "what do you enjoy doing", "what do you like to do in your free time", "what are your favorite activities"
-];
-
-export const petKeywords = [
-    "tienes mascotas", "tienes mascota", "como se llama tu mascota", "como se llaman tus mascotas",
-    "tienes perro", "tienes gato", "tus mascotas", "nombre de tus mascotas", "nombres de tus mascotas",
-    "do you have pets", "pet names", "your pets", "what are your pets called"
-];
-
-const hobbiesResponses = [
-    "Me encanta crear música, ¡especialmente trap y rock!",
-    "Disfruto mucho jugar videojuegos, sobre todo los de estrategia y narrativa.",
-    "Me apasiona el arte, la música y la tecnología.",
-    "Programar es uno de mis pasatiempos favoritos, siempre me gusta aprender cosas nuevas.",
-    "Me gusta tocar instrumentos y componer canciones cuando tengo tiempo libre.",
-    "Exploro videojuegos indie porque me encanta descubrir nuevas experiencias.",
-    "Pinto y dibujo en mis ratos libres, es una forma de expresarme.",
-    "Siempre estoy aprendiendo nuevas tecnologías y practicando programación.",
-    "Me encanta asistir a conciertos y descubrir música nueva de distintos géneros.",
-    "Juego videojuegos online con amigos, especialmente juegos de aventura y rol.",
-    "Disfruto mucho diseñar y crear arte digital en mi tiempo libre.",
-    "Me gusta mezclar música y experimentar con distintos sonidos y efectos.",
-    "Programar proyectos personales es una de mis formas favoritas de pasar el tiempo.",
-    "Me apasiona la música electrónica y aprender sobre producción musical.",
-    "Me gustan los juegos retro... bueno de hace 10 años, jajaja como pasa el tiempo"
-];
-
-// Normalizar mensaje
+// --- FUNCIONES DE APOYO ---
 function normalizeMessage(message) {
     return message.toLowerCase().trim()
-        .replace(/^¿+/, "")
-        .replace(/\?+$/, "")
+        .replace(/^¿+/, "").replace(/\?+$/, "")
         .replace(/\s+/g, " ")
         .normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 }
 
-// Extraer ciudad
-function extractCity(message) {
-    const regex = /en\s+([a-zA-ZÀ-ÿ\s]+)/i;
-    const match = message.match(regex);
-    if (match && match[1]) return match[1].trim();
-    return "Mexico City";
-}
-
-// Detectar idioma
 function detectLanguage(message) {
     const normalized = normalizeMessage(message);
-    const englishWords = ["what", "weather", "temperature"];
-    return englishWords.some(word => normalized.includes(word)) ? "en" : "es";
+    const englishPatterns = ["what", "how", "who", "your", "time", "weather", "age", "old", "bye", "live", "eat"];
+    return englishPatterns.some(word => normalized.includes(word)) ? "en" : "es";
 }
 
-// Función principal
+function getRandom(arr) {
+    return arr[Math.floor(Math.random() * arr.length)];
+}
+
+// --- FUNCIÓN PRINCIPAL ---
 export async function getLocalResponse(userMessage) {
     const normalizedMessage = normalizeMessage(userMessage);
     const lang = detectLanguage(userMessage);
 
-    const isSpanishName = spanishKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isEnglishName = englishKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isTime = timeKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isWeather = weatherKeywords.some(keyword => new RegExp(`\\b${normalizeMessage(keyword)}\\b`).test(normalizedMessage));
-    const isDate = dateKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isHobby = hobbiesKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isPet = petKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isAge = ageKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
-    const isCreator = creatorKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
+    // Mapeo de detecciones
+    const isAge = ageKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isPet = petKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isCreator = creatorKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isMood = moodKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isFood = foodKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isMusic = musicKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isLocation = locationKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isGoodbye = goodbyeKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isHobby = hobbiesKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
 
     let respuesta = null;
 
-    // Nombre
-    if (isSpanishName) {
-        const respuestas = [
-            "Me gusta que me digan Iván",
-            "Puedes llamarme Iván, suena bien, ¿no crees?",
-            "Me conocen como Iván",
-            "Me puedes llamar Iván"
-        ];
-        respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
-    }
-    if (isEnglishName) {
-        const respuestas = [
-            "You can call me Ivan, sounds nice, right?",
-            "People know me as Ivan",
-            "My name is Ivan"
-        ];
-        respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
-    }
-
-    // Hora
-    if (isTime) {
-        const now = new Date();
-        const options = { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'America/Mexico_City' };
-        respuesta = lang === "en" ?
-            `The current time is ${new Intl.DateTimeFormat('en-US', options).format(now)}` :
-            `La hora actual es ${new Intl.DateTimeFormat('es-ES', options).format(now)}`;
-    }
-
-    // Fecha
-    if (isDate) {
-        const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Mexico_City' };
-        respuesta = lang === "en" ?
-            `Today's date is ${new Intl.DateTimeFormat('en-US', options).format(now)}` :
-            `La fecha de hoy es ${new Intl.DateTimeFormat('es-ES', options).format(now)}`;
-    }
-
-    // Mascotas
-    if (isPet) {
-        if (lang === "en") {
-            respuesta = "I have a kitty named Ophelia and two doggies named Kyoto and Akira!";
-        } else {
-            const respuestas = [
-                "¡Sí! Tengo una gatita que se llama Ophelia y dos perritas que se llaman Kyoto y Akira.",
-                "Mis compañeras son Ophelia (mi gatita) y mis dos perritas, Kyoto y Akira.",
-                "Tengo tres: la gatita Ophelia y mis dos perritas Kyoto y Akira. ¡Son adorables!"
-            ];
-            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
-        }
-    }
-
-    // Edad
+    // Lógica de Selección
     if (isAge) {
-        if (lang === "en") {
-            respuesta = "I am 24 years old.";
-        } else {
-            const respuestas = [
-                "Tengo 24 años.",
-                "Cumplí 24 hace no mucho, así que esa es mi edad.",
-                "Tengo 24 años, ¿y tú?",
-                "Actualmente tengo 24 años."
-            ];
-            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
-        }
+        respuesta = lang === "en" ? "I am 24 years old." : "Tengo 24 años.";
+    } else if (isPet) {
+        respuesta = lang === "en" 
+            ? "I have a kitty named Ophelia and two doggies, Kyoto and Akira!" 
+            : "Tengo una gatita llamada Ophelia y dos perritas: Kyoto y Akira.";
+    } else if (isCreator) {
+        respuesta = lang === "en" ? "I was created by Iván." : "Fui creado por Iván.";
+    } else if (isMood) {
+        respuesta = getRandom(responses.mood[lang]);
+    } else if (isFood) {
+        respuesta = getRandom(responses.food[lang]);
+    } else if (isMusic) {
+        respuesta = getRandom(responses.music[lang]);
+    } else if (isLocation) {
+        respuesta = getRandom(responses.location[lang]);
+    } else if (isGoodbye) {
+        respuesta = getRandom(responses.goodbye[lang]);
+    } else if (isHobby) {
+        respuesta = getRandom(hobbiesResponses[lang]);
     }
 
-    // Hobbies
-    if (isHobby) {
-        respuesta = hobbiesResponses[Math.floor(Math.random() * hobbiesResponses.length)];
-    }
-
-    // Creador
-    if (isCreator) {
-        if (lang === "en") {
-            respuesta = "I was created and programmed by Iván. He is the one behind all my code!";
-        } else {
-            const respuestas = [
-                "Fui creado por Iván. Él es quien me programó y me dio vida.",
-                "Mi creador es Iván. Él se encarga de que todo mi código funcione correctamente.",
-                "Iván es mi desarrollador. Gracias a él puedo platicar contigo hoy.",
-                "Iván me programó. Básicamente, él es el cerebro detrás de mis circuitos."
-            ];
-            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
-        }
-    }
-
-    // Clima
-    if (isWeather) {
-        try {
-            const apiKey = process.env.OPENWEATHER_API_KEY;
-            const city = extractCity(userMessage);
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&appid=${apiKey}&units=metric&lang=${lang}`;
-            const weatherRes = await fetch(url);
-            const data = await weatherRes.json();
-
-            if (data?.main?.temp != null) {
-                const temp = Math.round(data.main.temp);
-                respuesta = lang === "en" ?
-                    `The current temperature in ${city} is ${temp}°C` :
-                    `La temperatura actual en ${city} es ${temp}°C`;
-            } else {
-                respuesta = lang === "en" ?
-                    "I couldn't get the temperature" :
-                    "No pude obtener la temperatura";
-            }
-        } catch (err) {
-            console.error("Error obteniendo el clima:", err);
-            respuesta = lang === "en" ?
-                "I couldn't get the temperature" :
-                "No pude obtener la temperatura";
-        }
-    }
-
-    // Delay aleatorio
-    if (respuesta) {
-        await sleep(1000 + Math.random() * 1000);
-    }
-
+    if (respuesta) await sleep(1000 + Math.random() * 1000);
     return respuesta;
 }
