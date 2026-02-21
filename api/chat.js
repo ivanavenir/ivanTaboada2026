@@ -1,8 +1,9 @@
 // /api/chat.js
 import { getLocalResponse } from './localResponses.js';
-import fetch from 'node-fetch';
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "OK" : "No definido");
+// Inicializa el cliente con tu API key
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export default async function handler(req, res) {
   try {
@@ -24,44 +25,26 @@ export default async function handler(req, res) {
       return res.status(200).json({ text: localResponse });
     }
 
-    // Validar API key de Google Gemini
-    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-    if (!GEMINI_API_KEY) {
+    if (!process.env.GEMINI_API_KEY) {
       console.error("API key de Gemini no configurada");
       return res.status(500).json({ text: "API key de Gemini no configurada" });
     }
 
-    console.log("Enviando mensaje a Gemini 3.0 Flash...");
+    console.log("Enviando mensaje a Gemini 3.0 Flash usando SDK...");
 
-    // Llamada al endpoint de Gemini 3.0 Flash
-    const googleResponse = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash:generateText?key=${GEMINI_API_KEY}`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          prompt: { text: userMessage },
-          maxOutputTokens: 200
-        }),
-      }
-    );
+    // Obtenemos el modelo generativo
+    const model = genAI.getGenerativeModel({ model: "gemini-3-flash" });
 
-    if (!googleResponse.ok) {
-      const errorText = await googleResponse.text();
-      console.error("Error HTTP Gemini:", googleResponse.status, errorText);
-      return res.status(500).json({ text: `Error de Gemini: ${errorText}` });
-    }
-
-    const data = await googleResponse.json();
-    const text = data.candidates?.[0]?.outputText?.trim() || "No tengo respuesta";
+    // Generamos contenido
+    const result = await model.generateContent(userMessage);
+    const response = await result.response;
+    const text = await response.text(); // Devuelve la respuesta en texto plano
 
     console.log("Respuesta de Gemini:", text);
     res.status(200).json({ text });
 
   } catch (error) {
-    console.error("Error interno del servidor:", error);
-    res.status(500).json({ text: `Error interno del servidor: ${error.message}` });
+    console.error("Hubo un error al conectar con Gemini:", error);
+    res.status(500).json({ text: `Error al conectar con Gemini: ${error.message}` });
   }
 }
