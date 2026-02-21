@@ -138,14 +138,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const descEl = document.querySelector("p.typewriter.desc");
 
   if (nameEl && descEl) {
-    const nameText = nameEl.textContent;   // texto del h2
-    const descText = descEl.textContent;   // texto del párrafo
+    const nameText = nameEl.dataset.text || nameEl.textContent;
+    const descText = descEl.dataset.text || descEl.textContent;
+
+    nameEl.textContent = "";
+    descEl.textContent = "";
 
     new TypeWriter(nameEl, nameText, 100, () => {
-      // callback cuando termine el h2
-      descEl.textContent = "";
-      descEl.classList.add("visible");
-      new TypeWriter(descEl, descText, 50); // typewriter del párrafo
+      new TypeWriter(descEl, descText, 50);
     });
   }
 

@@ -17,6 +17,7 @@
   --text: clamp(0.9rem, 2.2vw, 1rem);
   --img-scale: 2.8;
   --img-shift: 16%;
+  --header-height: 80px;
 }
 
 /* === BODY === */
@@ -130,7 +131,6 @@ body {
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
   display: none;
-  /* Chrome, Safari, Opera */
 }
 
 @keyframes gradientMove {
@@ -148,18 +148,13 @@ body::-webkit-scrollbar {
 /* === TEXTOS === */
 p.typewriter.desc {
   font-family: 'Courier New', monospace;
-  font-size: 1.3rem;
-  line-height: 1.6;
+  font-size: 1.15rem;      
   margin-top: 1rem;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
 
-.typewriter.desc {
-  display: inline-block;
-  overflow: hidden;
-  white-space: normal;
-  min-height: 4.5em;
+  line-height: 1.8rem;     
+  min-height: 7.2rem;     
+
+  display: block;
 }
 
 p.typewriter.desc.visible {
@@ -203,7 +198,7 @@ button#run {
   transform: translateY(1px);
 }
 
-/* Botón secundario */
+
 .btn.secondary {
   background: rgba(0, 0, 0, 0.712);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -227,12 +222,15 @@ header {
   top: 0;
   left: 0;
   width: 100%;
+  height: var(--header-height); /* 🔥 fijo */
   z-index: 50;
+
   backdrop-filter: blur(6px);
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  padding: 0.35rem 0;
-  transition: transform 0.3s ease, padding 0.3s ease, backdrop-filter 0.3s ease;
+
+  display: flex;
+  align-items: center;
 }
 
 header.shrink {
@@ -342,7 +340,7 @@ header.hide {
   align-items: center;
   gap: 2rem;
   min-height: 80vh;
-  padding-top: 13rem;
+  padding-top: calc(var(--header-height) + 4rem);
 }
 
 .hero-left {
@@ -367,7 +365,7 @@ header.hide {
 }
 
 body.subpage main {
-  padding-top: 10rem;
+  padding-top: calc(var(--header-height) + 2rem);
 }
 
 .profile-photo img {
@@ -384,16 +382,18 @@ body.subpage main {
 .typewriter {
   font-family: 'Courier New', monospace;
   display: block;
-  white-space: pre-wrap;
   overflow: hidden;
-  min-width: 20ch;
 }
 
 h1.typewriter {
   font-weight: 300;
   font-size: 2rem;
   margin: 0;
+
+  height: 2.4rem;  
   line-height: 2.4rem;
+  white-space: nowrap; 
+  overflow: hidden;
 }
 
 h2.typewriter {
@@ -488,7 +488,7 @@ h2.typewriter {
   }
 
   .hero {
-    padding-top: 13rem;
+    padding-top: calc(var(--header-height) + 4rem);
     flex-direction: column-reverse;
     align-items: center;
   }
@@ -519,9 +519,9 @@ h2.typewriter {
   }
 
   .hero {
+    padding-top: calc(var(--header-height) + 4rem);
     flex-direction: column-reverse;
     align-items: center;
-    padding-top: 13rem;
   }
 
   .hero-right {
@@ -550,7 +550,7 @@ h2.typewriter {
   }
 
   .hero {
-    padding-top: 12rem;
+    padding-top: calc(var(--header-height) + 4rem);
   }
 
   .nav-links {
