@@ -36,6 +36,18 @@ export const dateKeywords = [
     "today's date", "what is the date", "give me the date", "current date"
 ];
 
+export const ageKeywords = [
+    "cuántos años tienes", "cuantos años tienes", "qué edad tienes", "que edad tienes", "tu edad",
+    "dime tu edad", "cuál es tu edad", "cual es tu edad",
+    "how old are you", "what's your age", "what is your age", "your age"
+];
+
+export const creatorKeywords = [
+    "quien te creo", "quien es tu creador", "quien te programo", "quien te hizo",
+    "quien es tu dueño", "quien es tu desarrollador", "quien es ivan",
+    "who created you", "who is your creator", "who programmed you", "who made you"
+];
+
 export const hobbiesKeywords = [
     "qué te gusta hacer", "cuáles son tus hobbies", "qué haces en tu tiempo libre", "qué te gusta",
     "qué te entretiene", "cómo pasas tu tiempo libre", "qué actividades disfrutas", "qué haces para divertirte",
@@ -108,6 +120,8 @@ export async function getLocalResponse(userMessage) {
     const isDate = dateKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
     const isHobby = hobbiesKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
     const isPet = petKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
+    const isAge = ageKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
+    const isCreator = creatorKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
 
     let respuesta = null;
 
@@ -148,6 +162,7 @@ export async function getLocalResponse(userMessage) {
             `La fecha de hoy es ${new Intl.DateTimeFormat('es-ES', options).format(now)}`;
     }
 
+    // Mascotas
     if (isPet) {
         if (lang === "en") {
             respuesta = "I have a kitty named Ophelia and two doggies named Kyoto and Akira!";
@@ -161,9 +176,39 @@ export async function getLocalResponse(userMessage) {
         }
     }
 
+    // Edad
+    if (isAge) {
+        if (lang === "en") {
+            respuesta = "I am 24 years old.";
+        } else {
+            const respuestas = [
+                "Tengo 24 años.",
+                "Cumplí 24 hace no mucho, así que esa es mi edad.",
+                "Tengo 24 años, ¿y tú?",
+                "Actualmente tengo 24 años."
+            ];
+            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
+        }
+    }
+
     // Hobbies
     if (isHobby) {
         respuesta = hobbiesResponses[Math.floor(Math.random() * hobbiesResponses.length)];
+    }
+
+    // Creador
+    if (isCreator) {
+        if (lang === "en") {
+            respuesta = "I was created and programmed by Iván. He is the one behind all my code!";
+        } else {
+            const respuestas = [
+                "Fui creado por Iván. Él es quien me programó y me dio vida.",
+                "Mi creador es Iván. Él se encarga de que todo mi código funcione correctamente.",
+                "Iván es mi desarrollador. Gracias a él puedo platicar contigo hoy.",
+                "Iván me programó. Básicamente, él es el cerebro detrás de mis circuitos."
+            ];
+            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
+        }
     }
 
     // Clima
