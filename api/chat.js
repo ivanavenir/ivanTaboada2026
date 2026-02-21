@@ -24,27 +24,47 @@ export default async function handler(req, res) {
         }
 
         // Validar API key de Google Gemini
-        if (!process.env.GEMINI_API_KEY) {
+        const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+        if (!GEMINI_API_KEY) {
             console.error("API key de Gemini no configurada");
             return res.status(500).json({ text: "API key de Gemini no configurada" });
         }
 
-        console.log("Enviando mensaje a Google Gemini...");
+        console.log("Obteniendo modelos disponibles de Gemini...");
 
-        // Llamada al endpoint de Google Generative Language
+        // Listar modelos disponibles para tu API key
+        const modelsResponse = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
+        );
+
+        if (!modelsResponse.ok) {
+            const errorText = await modelsResponse.text();
+            console.error("Error al listar modelos Gemini:", modelsResponse.status, errorText);
+            return res.status(500).json({ text: `Error al listar modelos Gemini: ${errorText}` });
+        }
+
+        const modelsData = await modelsResponse.json();
+        const availableModels = modelsData.models?.filter(m => m.name?.includes('text')) || [];
+
+        if (availableModels.length === 0) {
+            console.error("No hay modelos de texto disponibles para tu API key de Gemini");
+            return res.status(500).json({ text: "No hay modelos de texto disponibles para tu API key de Gemini" });
+        }
+
+        // Usar el primer modelo de texto disponible
+        const selectedModel = availableModels[0].name;
+        console.log("Modelo seleccionado:", selectedModel);
+
+        // Llamada al endpoint de generación de texto
         const googleResponse = await fetch(
-            "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateText?key=" +
-            process.env.GEMINI_API_KEY,
+            `https://generativelanguage.googleapis.com/v1beta/models/${selectedModel}:generateText?key=${GEMINI_API_KEY}`,
             {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 body: JSON.stringify({
-                    prompt: {
-                        text: userMessage
-                    },
-                    // Opciones de máximo output
+                    prompt: { text: userMessage },
                     maxOutputTokens: 200
                 }),
             }
