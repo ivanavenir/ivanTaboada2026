@@ -23,8 +23,15 @@ export default async function handler(req, res) {
             return res.status(200).json({ text: localResponse });
         }
 
+        // Validar que la API key exista
+        if (!process.env.OPENAI_API_KEY) {
+            console.error("API key de OpenAI no configurada");
+            return res.status(500).json({ text: "API key de OpenAI no configurada" });
+        }
+
         //Si no hay respuesta local, enviar a OpenAI
         console.log("No se detectó respuesta local, enviando a OpenAI...");
+
         const response = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
             headers: {
@@ -43,8 +50,8 @@ export default async function handler(req, res) {
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("Error HTTP:", response.status, errorText);
-            return res.status(500).json({ text: "No pude obtener respuesta" });
+            console.error("Error HTTP de OpenAI:", response.status, errorText);
+            return res.status(500).json({ text: `Error de OpenAI: ${errorText}` });
         }
 
         const data = await response.json();
@@ -54,7 +61,7 @@ export default async function handler(req, res) {
         res.status(200).json({ text });
 
     } catch (error) {
-        console.error("Error interno:", error);
-        res.status(500).json({ text: "Ocurrió un error interno" });
+        console.error("Error interno del servidor:", error);
+        res.status(500).json({ text: `Error interno del servidor: ${error.message}` });
     }
 }
