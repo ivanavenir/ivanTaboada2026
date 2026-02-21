@@ -147,7 +147,7 @@ header {
 .hamburger span {
   height: 2px;
   background: var(--fg);
-  border-radius: 2px;
+  border-radius: none;
 }
 
 /* ================================================= */

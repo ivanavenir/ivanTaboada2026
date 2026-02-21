@@ -1,0 +1,113 @@
+.editor-wrapper, .daw-container {
+    width: 100%; 
+    max-width: 1200px; 
+}
+
+.sequencer-grid {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr); 
+    gap: 8px; 
+    flex: 1; 
+}
+
+.pad {
+    width: 100%;
+    min-height: 60px; 
+    border-radius: none; 
+    cursor: pointer;
+    border: none;
+    background: #222;
+    transition: transform 0.1s;
+}
+
+.pad.active {
+    background: #ff4c82; 
+    box-shadow: 0 0 10px #ff4c82;
+}
+
+.pad.current {
+    border: none;
+}
+
+.controls {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin-bottom: 1rem;
+}
+
+.sequencer-wrapper {
+    display: flex;
+    gap: 20px;
+    background: #111;
+    padding: 20px;
+    border-radius: none;
+    overflow-x: auto;
+}
+
+.effects-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    gap: 10px;
+    padding-left: 15px;
+    border-left: 1px solid #333;
+}
+
+.knob-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 70px; /* Misma altura que tus pads */
+    justify-content: center;
+}
+
+.knob-group label {
+    font-size: 0.6rem;
+    color: var(--muted);
+    margin-bottom: 5px;
+}
+
+.knob {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 4px;
+    background: #333;
+    border-radius: none;
+    outline: none;
+}
+
+.knob::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #ff4c82;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 5px #ff4c82;
+}
+
+.instrument-labels {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around; 
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: var(--muted);
+    text-align: right;
+    min-width: 80px;
+}
+
+.instrument-labels span {
+    height: 50px; 
+    margin-bottom: 8px; 
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.pad[data-row="0"].active { background: #ff4800; box-shadow: 0 0 10px #ff4800; } 
+.pad[data-row="1"].active { background: #ff4c82; box-shadow: 0 0 10px #ff4c82; } 
+.pad[data-row="2"].active { background: #00f2ff; box-shadow: 0 0 10px #00f2ff; } 
+.pad[data-row="3"].active { background: #adff2f; box-shadow: 0 0 10px #adff2f; } 

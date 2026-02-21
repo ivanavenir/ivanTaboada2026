@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EZDAW | Iván Taboada</title>
+    <link rel="stylesheet" href="../css/preload.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/ezdawStyle.css">
+    <link rel="icon" href="../assets/icons/logo.png" type="image/png" sizes="24x24">
+    <script>
+        window.addEventListener('load', () => {
+            document.documentElement.style.visibility = 'visible';
+            document.documentElement.style.opacity = '1';
+        });
+    </script>
+</head>
+
+<body class="subpage">
+    <header></header>
+    <main class="wrap hero">
+        <div class="hero-left">
+            <h2 class="typewriter">EZDAW</h2>
+
+            <p class="typewriter desc"
+                data-text="Here you can make your own beats in a simple step sequencer. Click the pads to activate them, adjust the BPM and tone controls, and hit play to hear your creation come to life!">
+                <span class="typewriter-text"></span>
+            </p>
+
+
+            <div class="daw-container">
+                <div class="controls">
+                    <button id="play-pause" class="btn">Play</button>
+                    <div class="bpm-control">
+                        <input type="range" id="bpm" min="60" max="180" value="140">
+                        <span id="bpm-display">140 BPM</span>
+                    </div>
+                </div>
+
+                <div class="sequencer-wrapper">
+                    <div class="instrument-labels">
+                        <span>KICK</span>
+                        <span>SNARE</span>
+                        <span>HI-HAT</span>
+                        <span>OPEN-HAT</span>
+                    </div>
+
+                    <div id="sequencer" class="sequencer-grid"></div>
+
+                    <div class="effects-panel">
+                        <div class="knob-group">
+                            <label>TONE</label>
+                            <input type="range" class="knob" data-row="0" min="40" max="5000" value="3000">
+                        </div>
+                        <div class="knob-group">
+                            <label>TONE</label>
+                            <input type="range" class="knob" data-row="1" min="200" max="8000" value="4000">
+                        </div>
+                        <div class="knob-group">
+                            <label>TONE</label>
+                            <input type="range" class="knob" data-row="2" min="1000" max="15000" value="10000">
+                        </div>
+                        <div class="knob-group">
+                            <label>TONE</label>
+                            <input type="range" class="knob" data-row="3" min="1000" max="15000" value="10000">
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </main>
+
+    <script src="../js/main.js" defer></script>
+    <script src="../js/ezdaw.js" defer></script>
+</body>
+
+</html>
