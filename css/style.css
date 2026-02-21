@@ -544,6 +544,12 @@ h2.typewriter {
 }
 
 @media (max-width: 630px) {
+
+  header {
+    padding-left: 1rem;
+    padding-right: 0.4rem;
+  }
+
   :root {
     --img-scale: 2.6;
     --img-shift: 0%;
