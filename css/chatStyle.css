@@ -16,11 +16,11 @@ body {
 .chat-container {
     width: 100%;
     max-width: 400px;
-    padding: 20px; /* 🔥 un solo padding consistente */
+    padding: 20px; 
     display: flex;
     flex-direction: column;
     gap: 15px;
-
+    font-family: 'Courier New', monospace;
     background: #00000021;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -32,14 +32,14 @@ body {
     padding: 15px;
     border: none;
     outline: none;
-    background: #ffffff1c;
+    background: #00000021;
     font-family: 'Courier New', monospace;
     color: #ffffff;
 }
 
 /* BOTÓN RUN */
 button#run {
-    align-self: flex-end; /* 🔥 lo alinea a la derecha */
+    align-self: flex-end; 
     padding: 10px 20px;
     border: none;
     background: #ff0062;
@@ -56,6 +56,7 @@ button#run {
 }
 
 .input-area input {
+    font-family: 'Courier New', monospace;
     flex: 1;
     padding: 10px;
     border: none;

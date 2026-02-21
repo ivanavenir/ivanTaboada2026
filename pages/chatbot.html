@@ -7,14 +7,33 @@
     <title>CHATBOT</title>
     <link rel="stylesheet" href="../css/chatStyle.css" />
     <link rel="stylesheet" href="../css/style.css" />
-  <link rel="icon" href="../assets/icons/logo.png" type="image/png" sizes="24x24">
-  <link rel="apple-touch-icon" href="../assets/icons/logo.png" sizes="180x180">
+    <link rel="icon" href="../assets/icons/logo.png" type="image/png" sizes="24x24">
+    <link rel="apple-touch-icon" href="../assets/icons/logo.png" sizes="180x180">
+
+    <style>
+        /* ================= TYPEWRITER ==================== */
+        .typewriter {
+            font-family: 'Courier New', monospace;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            white-space: pre-wrap;
+        }
+
+        /* Reservar espacio fijo para no mover layout */
+        h2.typewriter {
+            min-height: 2.2rem; /* ajusta según tamaño de fuente */
+        }
+    </style>
 </head>
 
 <body>
     <header></header>
+
     <div class="chat-container">
-        <h2 class="typewriter">Ask me anything!</h2>
+        <!-- Typewriter animación -->
+        <h2 class="typewriter" data-text="Ask me anything!">Ask me anything!</h2>
+
         <div id="chat-box" class="chat-box"></div>
 
         <div class="input-area">
@@ -23,6 +42,7 @@
         </div>
     </div>
 
+    <!-- ================= JS CHAT ==================== -->
     <script>
         console.log("chatbot.html cargado correctamente");
 
@@ -72,27 +92,35 @@
         }
     </script>
 
+    <!-- ================= TYPEWRITER ==================== -->
     <script>
-        function typeWriter(element, speed = 100) {
-            const text = element.dataset.text || element.textContent;
-            element.textContent = "";
-            let i = 0;
-            const interval = setInterval(() => {
-                element.textContent += text[i];
-                i++;
-                if (i >= text.length) clearInterval(interval);
-            }, speed);
+        class TypeWriter {
+            constructor(element, speed = 100) {
+                this.element = element;
+                // Si hay data-text, úsalo; si no, usa contenido HTML
+                this.text = element.dataset.text || element.textContent || "";
+                this.speed = speed;
+                this.index = 0;
+                this.element.textContent = ""; // limpia el contenido inicial
+                this.type();
+            }
+
+            type() {
+                if (this.index < this.text.length) {
+                    this.element.textContent += this.text[this.index];
+                    this.index++;
+                    setTimeout(() => this.type(), this.speed);
+                }
+            }
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            const elements = document.querySelectorAll(".typewriter");
-            elements.forEach(el => {
-                typeWriter(el, 100);
-            });
+            document.querySelectorAll(".typewriter").forEach(el => new TypeWriter(el, 100));
         });
     </script>
 
-    <script src="../js/main.js"></script>
+    <!-- ================= MAIN JS ==================== -->
+    <script src="../js/main.js" defer></script>
 </body>
 
 </html>

@@ -23,8 +23,8 @@
   --max-w: 1100px;
   --header-height: 80px;
 
-  --img-scale: 2.6;
-  --img-shift: 8%;
+  --img-scale: 1;
+  --img-shift: 0%;
 }
 
 /* ================================================= */
@@ -42,7 +42,6 @@ body {
   color: var(--fg);
   font-family: 'Inter', system-ui, Segoe UI, Roboto, sans-serif;
   overflow-x: hidden;
-
   background: linear-gradient(270deg, #ff4d91, #ff0095, #ff4800, #ff85b3);
   background-size: 800% 800%;
   animation: gradientMove 55s ease infinite;
@@ -69,11 +68,9 @@ header {
   width: 100%;
   height: var(--header-height);
   z-index: 100;
-
   backdrop-filter: blur(6px);
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-
   display: flex;
   align-items: center;
   padding: 0 1rem;
@@ -157,27 +154,21 @@ header {
 /* ================= HERO ========================== */
 /* ================================================= */
 
-body:not(.subpage) {
-  display: flex;
-  flex-direction: column;
-}
-
 body:not(.subpage) main.hero {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   gap: 2rem;
-
   flex: 1;
   min-height: 100vh;
-  padding-top: calc(var(--header-height) + 2rem);
-
+  padding-top: calc(var(--header-height) + 6rem);
   max-width: var(--max-w);
   margin: 0 auto;
+  position: relative;
 }
 
 .hero-left {
-  flex: 1;
+  flex: 0 0 55%;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -185,20 +176,34 @@ body:not(.subpage) main.hero {
 }
 
 .hero-right {
-  flex: 1;
+  flex: 0 0 auto;
   display: flex;
   justify-content: flex-end;
-  align-items: center;
+  align-items: flex-start;
+  position: relative;
+  margin-top: -15rem; 
+}
 
-  transform: scale(var(--img-scale)) translateX(var(--img-shift));
-  transition: transform 0.3s ease;
+.profile-photo {
+  width: 100%;
+  max-width: 1000px; /* imagen grande en desktop */
 }
 
 .profile-photo img {
   width: 100%;
-  max-width: 420px;
-  aspect-ratio: 4/5;
+  height: auto;
   object-fit: contain;
+  display: block;
+}
+
+/* ================================================= */
+/* ================= SUBPAGES ====================== */
+/* ================================================= */
+
+body.subpage main {
+  padding-top: calc(var(--header-height) + 6rem); /* ajusta a tu gusto */
+  max-width: var(--max-w);
+  margin: 0 auto;
 }
 
 /* ================================================= */
@@ -220,7 +225,6 @@ body:not(.subpage) main.hero {
 
 .btn:hover {
   background: rgba(0, 0, 0, 0.9);
-  transform: translateY(-2px);
 }
 
 .cta-row {
@@ -250,17 +254,20 @@ h2.typewriter {
 }
 
 p.typewriter.desc {
-  max-width: 630px;
+  position: relative;
+  overflow: hidden;
+  max-width: 100%;
   min-height: 7rem;
   line-height: 1.7rem;
+  margin-top: 0.5rem;
 }
 
-/* ================================================= */
-/* ================= SUBPAGES ====================== */
-/* ================================================= */
-
-body.subpage main {
-  padding-top: calc(var(--header-height) + 3rem);
+.typewriter-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: inline-block;
 }
 
 /* ================================================= */
@@ -274,6 +281,8 @@ body.subpage main {
   max-width: 1000px;
   margin: 0 auto;
   gap: 0.75rem;
+  position: relative;
+  z-index: 1;
 }
 
 .editor,
@@ -284,33 +293,57 @@ body.subpage main {
   font-family: monospace;
   font-size: 1.2rem;
   line-height: 1.5rem;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba(0, 0, 0, 0.8);
   color: #ff4c82;
   overflow-y: auto;
   white-space: pre-wrap;
   border: none;
+  border-radius: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.editor:focus,
+#output:focus {
+  outline: 2px solid var(--accent);
+  background: rgba(0,0,0,0.9);
 }
 
 /* ================================================= */
 /* ================= RESPONSIVE ==================== */
 /* ================================================= */
 
-@media (max-width: 760px) {
+@media (max-width: 1024px) {
 
+  /* Subpages main padding */
+  body.subpage main {
+    padding-top: calc(var(--header-height) + 5rem); /* contenido más abajo */
+  }
+
+  /* Hero responsive */
   body:not(.subpage) main.hero {
     flex-direction: column-reverse;
     text-align: center;
     align-items: center;
+    padding-top: calc(var(--header-height) + 6rem);
   }
 
+  .hero-left,
   .hero-right {
-    transform: scale(1.4) translateX(0);
+    flex: 1 1 100%;
+  }
+
+  /* Imagen más abajo en móviles */
+  .hero-right {
+    transform: scale(1.5) translateX(0);
+    margin-top: 4rem; /* empuja la imagen hacia abajo */
+    margin-bottom: 2rem;
   }
 
   .profile-photo img {
-    max-width: 280px;
+    max-width: 300px; /* tamaño más adecuado en móvil */
   }
 
+  /* NAV LINKS mobile */
   .nav-links {
     display: none;
     flex-direction: column;
@@ -331,6 +364,7 @@ body.subpage main {
     padding: 12px 0;
   }
 
+  /* HAMBURGER visible */
   .hamburger {
     display: flex;
   }
@@ -341,13 +375,6 @@ body.subpage main {
 /* ================================================= */
 
 @keyframes gradientMove {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
 }

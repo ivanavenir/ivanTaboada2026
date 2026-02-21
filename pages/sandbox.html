@@ -34,11 +34,11 @@
 
 <body class="subpage">
 
-    <header></header> <!-- Menu dinámico generado por main.js -->
+    <header></header> 
 
     <main class="wrap section">
-        <h2 class="typewriter">Let's code</h2>
-        <p class="typewriter desc">Write and run KATO code directly in your browser!</p>
+        <h2 class="typewriter" data-text="Let's code"></h2></br>
+        <p class="typewriter desc" data-text="Write and run KATO code directly in your browser!"></p>
 
         <div class="editor-wrapper">
             <div class="btn-container">
@@ -83,7 +83,7 @@
             const pythonCode = transpile(src);
             const out = document.getElementById("output");
             out.textContent = "";
-            editor.innerHTML = editor.innerText; 
+            editor.innerHTML = editor.innerText;
 
             function highlightError(lineNumber) {
                 const lines = editor.innerText.split("\n");
