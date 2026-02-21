@@ -554,7 +554,7 @@ h2.typewriter {
   }
 
   .hero {
-    padding-top: calc(var(--header-height) + 4rem);
+    padding-top: calc(var(--header-height) + 7rem);
   }
 
   .nav-links {
