@@ -15,40 +15,45 @@ export const englishKeywords = [
 ];
 
 export const timeKeywords = [
-    "qué hora es","me puedes decir la hora","hora actual","dame la hora","cual es la hora",
-    "la hora","qué hora tenemos","puedes decirme la hora","hora por favor","me dices la hora",
-    "sabes la hora","qué hora tienes","qué hora son",
-    "what time is it","current time","tell me the time","the time",
-    "can you tell me the time","time now","what's the time","do you know the time","give me the time"
+    "qué hora es", "me puedes decir la hora", "hora actual", "dame la hora", "cual es la hora",
+    "la hora", "qué hora tenemos", "puedes decirme la hora", "hora por favor", "me dices la hora",
+    "sabes la hora", "qué hora tienes", "qué hora son",
+    "what time is it", "current time", "tell me the time", "the time",
+    "can you tell me the time", "time now", "what's the time", "do you know the time", "give me the time"
 ];
 
 export const weatherKeywords = [
-    "qué temperatura hace","cómo está el clima","temperatura actual","la temperatura","qué clima hace",
-    "cómo está el tiempo","dime la temperatura","dame la temperatura","dame el clima","dime el clima",
-    "sabes la temperatura","sabes el clima","temperatura por favor","clima actual","qué temperatura hay",
-    "current temperature","what's the weather","how's the weather","the weather","weather now",
-    "current weather","what's the temperature","give me the weather","give me the temperature",
-    "temperature now","tell me the temperature"
+    "qué temperatura hace", "cómo está el clima", "temperatura actual", "la temperatura", "qué clima hace",
+    "cómo está el tiempo", "dime la temperatura", "dame la temperatura", "dame el clima", "dime el clima",
+    "sabes la temperatura", "sabes el clima", "temperatura por favor", "clima actual", "qué temperatura hay",
+    "current temperature", "what's the weather", "how's the weather", "the weather", "weather now",
+    "current weather", "what's the temperature", "give me the weather", "give me the temperature",
+    "temperature now", "tell me the temperature"
 ];
 
 export const dateKeywords = [
-    "qué día es","qué fecha es","dame la fecha","cual es la fecha",
-    "today's date","what is the date","give me the date","current date"
+    "qué día es", "qué fecha es", "dame la fecha", "cual es la fecha",
+    "today's date", "what is the date", "give me the date", "current date"
 ];
 
 export const hobbiesKeywords = [
-    "qué te gusta hacer","cuáles son tus hobbies","qué haces en tu tiempo libre","qué te gusta",
-    "qué te entretiene","cómo pasas tu tiempo libre","qué actividades disfrutas","qué haces para divertirte",
-    "tienes algún hobby","qué hobbies tienes","qué haces cuando estás libre","qué te apasiona",
-    "qué te interesa hacer","qué te gusta hacer en tu tiempo libre","qué aficiones tienes",
-    "what do you like to do","what are your hobbies","what do you do in your free time",
-    "what do you enjoy","how do you spend your free time","what activities do you like",
-    "what do you do for fun","do you have any hobbies","what hobbies do you have",
-    "what do you like doing","what interests you","what are you passionate about",
-    "what do you enjoy doing","what do you like to do in your free time","what are your favorite activities"
+    "qué te gusta hacer", "cuáles son tus hobbies", "qué haces en tu tiempo libre", "qué te gusta",
+    "qué te entretiene", "cómo pasas tu tiempo libre", "qué actividades disfrutas", "qué haces para divertirte",
+    "tienes algún hobby", "qué hobbies tienes", "qué haces cuando estás libre", "qué te apasiona",
+    "qué te interesa hacer", "qué te gusta hacer en tu tiempo libre", "qué aficiones tienes",
+    "what do you like to do", "what are your hobbies", "what do you do in your free time",
+    "what do you enjoy", "how do you spend your free time", "what activities do you like",
+    "what do you do for fun", "do you have any hobbies", "what hobbies do you have",
+    "what do you like doing", "what interests you", "what are you passionate about",
+    "what do you enjoy doing", "what do you like to do in your free time", "what are your favorite activities"
 ];
 
-// Lista de respuestas de hobbies (definida fuera de la función)
+export const petKeywords = [
+    "tienes mascotas", "tienes mascota", "como se llama tu mascota", "como se llaman tus mascotas",
+    "tienes perro", "tienes gato", "tus mascotas", "nombre de tus mascotas", "nombres de tus mascotas",
+    "do you have pets", "pet names", "your pets", "what are your pets called"
+];
+
 const hobbiesResponses = [
     "Me encanta crear música, ¡especialmente trap y rock!",
     "Disfruto mucho jugar videojuegos, sobre todo los de estrategia y narrativa.",
@@ -64,7 +69,7 @@ const hobbiesResponses = [
     "Me gusta mezclar música y experimentar con distintos sonidos y efectos.",
     "Programar proyectos personales es una de mis formas favoritas de pasar el tiempo.",
     "Me apasiona la música electrónica y aprender sobre producción musical.",
-    "Me gustan los juegos retro... bueno de hace 10 años, por la nostalgia"
+    "Me gustan los juegos retro... bueno de hace 10 años, jajaja como pasa el tiempo"
 ];
 
 // Normalizar mensaje
@@ -140,6 +145,19 @@ export async function getLocalResponse(userMessage) {
         respuesta = lang === "en" ?
             `Today's date is ${new Intl.DateTimeFormat('en-US', options).format(now)}` :
             `La fecha de hoy es ${new Intl.DateTimeFormat('es-ES', options).format(now)}`;
+    }
+
+    if (isPet) {
+        if (lang === "en") {
+            respuesta = "I have a kitty named Ophelia and two doggies named Kyoto and Akira!";
+        } else {
+            const respuestas = [
+                "¡Sí! Tengo una gatita que se llama Ophelia y dos perritas que se llaman Kyoto y Akira.",
+                "Mis compañeras son Ophelia (mi gatita) y mis dos perritas, Kyoto y Akira.",
+                "Tengo tres: la gatita Ophelia y mis dos perritas Kyoto y Akira. ¡Son adorables!"
+            ];
+            respuesta = respuestas[Math.floor(Math.random() * respuestas.length)];
+        }
     }
 
     // Hobbies
