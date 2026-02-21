@@ -229,8 +229,7 @@ header {
 
   display: flex;
   align-items: center;
-  padding: 0 1.5rem;
-  /* 🔥 espacio lateral */
+  padding: 0;
 }
 
 header.shrink {
@@ -246,9 +245,8 @@ header.hide {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 1rem;
-  padding: 0.35rem 0;
+  width: 100%;
+  padding: 0 1rem; 
 }
 
 .brand {
@@ -547,7 +545,7 @@ h2.typewriter {
 
   header {
     padding-left: 1rem;
-    padding-right: 0.4rem;
+    padding-right: 0.3rem;
   }
 
   :root {
