@@ -229,7 +229,7 @@ header {
 
   display: flex;
   align-items: center;
-  padding: 0;
+  padding: 0.5rem;
 }
 
 header.shrink {
@@ -544,8 +544,8 @@ h2.typewriter {
 @media (max-width: 630px) {
 
   header {
-    padding-left: 1rem;
-    padding-right: 0.3rem;
+    padding-left: 0rem;
+    padding-right: 2rem;
   }
 
   :root {
