@@ -1,8 +1,11 @@
 import { getLocalResponse } from './localResponses.js';
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 
-// 1. Forzamos la inicialización limpia
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Inicializamos Groq usando la librería de OpenAI
+const client = new OpenAI({
+  apiKey: process.env.GROQ_API_KEY,
+  baseURL: "https://api.groq.com/openai/v1", // Esto redirige a Groq
+});
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST requerido' });
@@ -13,40 +16,29 @@ export default async function handler(req, res) {
 
     if (!userMessage) return res.status(400).json({ text: "Mensaje vacío" });
 
-    // Respuesta local
+    // 1. Tu lógica local sigue funcionando igual
     const localResponse = await getLocalResponse(userMessage);
     if (localResponse) return res.status(200).json({ text: localResponse });
 
-    // 2. CAMBIO CLAVE: Usamos el nombre base del modelo 
-    // Si 'gemini-1.5-flash-latest' falla con 404, el nombre estándar es 'gemini-1.5-flash'
-    // En 2026, si ya existe Gemini 2, usa 'gemini-2.0-flash'
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash" 
+    // 2. Llamada a Groq (Usando Llama 3.1 70B o 3.3 70B)
+    const chatCompletion = await client.chat.completions.create({
+      messages: [{ role: "user", content: userMessage }],
+      model: "llama-3.1-70b-versatile", // El modelo gratuito más potente actualmente
+      temperature: 0.7,
+      max_tokens: 1024,
     });
 
-    console.log("Intentando conectar con el modelo estable...");
+    const aiResponse = chatCompletion.choices[0]?.message?.content;
 
-    // 3. Estructura de llamada compatible con v1 estable
-    const result = await model.generateContent(userMessage);
-    
-    // Verificación de la respuesta
-    const response = result.response;
-    const text = response.text();
+    if (!aiResponse) throw new Error("No se recibió respuesta de la IA.");
 
-    if (!text) throw new Error("Respuesta de IA vacía");
-
-    return res.status(200).json({ text });
+    return res.status(200).json({ text: aiResponse });
 
   } catch (error) {
-    console.error("Error detectado:", error.message);
-
-    // Si vuelve a dar 404, intentamos con el modelo Pro como último recurso
-    if (error.message.includes("404")) {
-        return res.status(404).json({ 
-            text: "El modelo 'gemini-1.5-flash' no se encontró. Verifica en Google AI Studio si tu API Key tiene permisos para este modelo o si debes usar 'gemini-pro'." 
-        });
-    }
-
-    return res.status(500).json({ text: "Error de conexión con la IA." });
+    console.error("Error en Groq API:", error);
+    
+    return res.status(500).json({ 
+      text: "Error al conectar con el cerebro de la IA. Inténtalo de nuevo." 
+    });
   }
 }
