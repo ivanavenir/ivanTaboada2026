@@ -2,6 +2,8 @@
 import { getLocalResponse } from './localResponses.js';
 import fetch from 'node-fetch';
 
+console.log("GEMINI_API_KEY:", process.env.GEMINI_API_KEY ? "OK" : "No definido");
+
 export default async function handler(req, res) {
     try {
         if (req.method !== 'POST') {
