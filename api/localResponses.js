@@ -107,6 +107,7 @@ export async function getLocalResponse(userMessage) {
     const isWeather = weatherKeywords.some(keyword => new RegExp(`\\b${normalizeMessage(keyword)}\\b`).test(normalizedMessage));
     const isDate = dateKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
     const isHobby = hobbiesKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
+    const isPet = petKeywords.some(keyword => normalizedMessage.includes(normalizeMessage(keyword)));
 
     let respuesta = null;
 
