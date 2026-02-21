@@ -13,6 +13,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const indexLink = inPages ? "../index.html" : "index.html";
     const proyectosLink = inPages ? "proyectos.html" : "pages/proyectos.html";
     const acercaLink = inPages ? "acerca.html" : "pages/acerca.html";
+    const katoLink = inPages ? "sandbox.html" : "pages/sandbox.html";
+    const chatLink = inPages ? "chatbot.html" : "pages/chatbot.html";
+    const ezdawLink = inPages ? "ezdaw.html" : "pages/ezdaw.html";
 
     navWrap.innerHTML = `
       <div class="brand">
@@ -27,6 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
         <a href="${indexLink}">HELLO</a>
         <a href="${proyectosLink}">PROJECTS</a>
         <a href="${acercaLink}">CONTACT ME</a>
+        <a href="${katoLink}">KATO</a>
+        <a href="${chatLink}">CHAT</a>
+        <a href="${ezdawLink}">EZDAW</a>
       </nav>
     `;
     header.appendChild(navWrap);

@@ -148,13 +148,11 @@ body::-webkit-scrollbar {
 /* === TEXTOS === */
 p.typewriter.desc {
   font-family: 'Courier New', monospace;
-  font-size: 1.15rem;      
-  margin-top: 1rem;
+  font-size: 1.15rem;
+  line-height: 1.8rem;
 
-  line-height: 1.8rem;     
-  min-height: 7.2rem;     
-
-  display: block;
+  height: 9rem;       
+  overflow: hidden;    
 }
 
 p.typewriter.desc.visible {
