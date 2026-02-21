@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 
 export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// --- NUEVAS PALABRAS CLAVE ---
+// --- PALABRAS CLAVE (KEYWORDS) ---
 export const creatorKeywords = ["quien te creo", "quien es tu creador", "quien te programo", "who created you", "who is your creator"];
 export const ageKeywords = ["cuantos años tienes", "tu edad", "how old are you", "your age"];
 export const petKeywords = ["tienes mascotas", "mascotas", "do you have pets", "pet names"];
@@ -11,6 +11,8 @@ export const foodKeywords = ["comida favorita", "que te gusta comer", "favorite 
 export const musicKeywords = ["musica favorita", "que musica escuchas", "favorite music", "what music do you like"];
 export const locationKeywords = ["de donde eres", "donde vives", "where are you from", "where do you live"];
 export const goodbyeKeywords = ["adios", "chao", "hasta luego", "bye", "goodbye", "see you"];
+export const hobbiesKeywords = ["que te gusta hacer", "cuales son tus hobbies", "what do you like to do", "what are your hobbies"]; // <-- CORREGIDO: Añadida
+export const nameKeywords = ["como te llamas", "tu nombre", "what is your name", "your name"];
 
 // --- DICCIONARIO DE RESPUESTAS ---
 const responses = {
@@ -33,12 +35,11 @@ const responses = {
     goodbye: {
         es: ["¡Hasta luego! Cuídate mucho.", "¡Nos vemos! Fue un gusto hablar contigo.", "¡Chao! Aquí estaré si me necesitas."],
         en: ["Goodbye! Take care.", "See you later! It was nice talking to you.", "Bye! I'll be here if you need me."]
+    },
+    hobbies: {
+        es: ["Me encanta crear música, especialmente trap!", "Disfruto mucho jugar videojuegos.", "Programar es mi pasatiempo favorito."],
+        en: ["I love creating music, especially trap!", "I really enjoy playing video games.", "Programming is my favorite hobby."]
     }
-};
-
-const hobbiesResponses = {
-    es: ["Me encanta crear música, especialmente trap!", "Disfruto mucho jugar videojuegos.", "Programar es mi pasatiempo favorito."],
-    en: ["I love creating music, especially trap!", "I really enjoy playing video games.", "Programming is my favorite hobby."]
 };
 
 // --- FUNCIONES DE APOYO ---
@@ -51,7 +52,7 @@ function normalizeMessage(message) {
 
 function detectLanguage(message) {
     const normalized = normalizeMessage(message);
-    const englishPatterns = ["what", "how", "who", "your", "time", "weather", "age", "old", "bye", "live", "eat"];
+    const englishPatterns = ["what", "how", "who", "your", "time", "weather", "age", "old", "bye", "live", "eat", "hobbies", "pets"];
     return englishPatterns.some(word => normalized.includes(word)) ? "en" : "es";
 }
 
@@ -65,6 +66,7 @@ export async function getLocalResponse(userMessage) {
     const lang = detectLanguage(userMessage);
 
     // Mapeo de detecciones
+    const isName = nameKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isAge = ageKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isPet = petKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isCreator = creatorKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
@@ -78,11 +80,13 @@ export async function getLocalResponse(userMessage) {
     let respuesta = null;
 
     // Lógica de Selección
-    if (isAge) {
+    if (isName) {
+        respuesta = lang === "en" ? "My name is Ivan!" : "Me puedes llamar Iván.";
+    } else if (isAge) {
         respuesta = lang === "en" ? "I am 24 years old." : "Tengo 24 años.";
     } else if (isPet) {
         respuesta = lang === "en" 
-            ? "I have a kitty named Ophelia and two doggies, Kyoto and Akira!" 
+            ? "I have a kitty named Ophelia and two doggies: Kyoto and Akira!" 
             : "Tengo una gatita llamada Ophelia y dos perritas: Kyoto y Akira.";
     } else if (isCreator) {
         respuesta = lang === "en" ? "I was created by Iván." : "Fui creado por Iván.";
@@ -97,9 +101,12 @@ export async function getLocalResponse(userMessage) {
     } else if (isGoodbye) {
         respuesta = getRandom(responses.goodbye[lang]);
     } else if (isHobby) {
-        respuesta = getRandom(hobbiesResponses[lang]);
+        respuesta = getRandom(responses.hobbies[lang]);
     }
 
-    if (respuesta) await sleep(1000 + Math.random() * 1000);
+    if (respuesta) {
+        await sleep(1000 + Math.random() * 1000);
+    }
+    
     return respuesta;
 }
