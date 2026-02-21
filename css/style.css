@@ -1,252 +1,89 @@
-/* === FUENTES === */
+/* ================================================= */
+/* ================== FUENTES ====================== */
+/* ================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+
 @font-face {
   font-family: 'SuperRetro';
-  src: url('../assets/fonts/SuperRetroM54.ttf') format('truetype');
+  src: url('/assets/fonts/SuperRetroM54.ttf') format('truetype');
   font-display: swap;
 }
 
-/* === VARIABLES === */
+/* ================================================= */
+/* ================= VARIABLES ===================== */
+/* ================================================= */
+
 :root {
   --bg: #ff4d91;
   --fg: #fff;
   --accent: #ff0095;
   --accent-2: #ff4800;
   --muted: #e4d0df;
-  --gap: 1.125rem;
   --max-w: 1100px;
-  --text: clamp(0.9rem, 2.2vw, 1rem);
-  --img-scale: 2.8;
-  --img-shift: 16%;
   --header-height: 80px;
+
+  --img-scale: 2.6;
+  --img-shift: 8%;
 }
 
-/* === BODY === */
-html,
+/* ================================================= */
+/* ================= BASE ========================== */
+/* ================================================= */
 
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  height: 100%;
   margin: 0;
   padding: 0;
   color: var(--fg);
   font-family: 'Inter', system-ui, Segoe UI, Roboto, sans-serif;
   overflow-x: hidden;
-  overflow-y: scroll;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+
   background: linear-gradient(270deg, #ff4d91, #ff0095, #ff4800, #ff85b3);
   background-size: 800% 800%;
   animation: gradientMove 55s ease infinite;
 }
 
-.editor-wrapper {
-  display: flex;
-  flex-direction: column;
-  width: 95%;
-  max-width: 1000px;
-  margin: 0 auto;
-  gap: 0.5rem;
-  height: 50vh;
-}
+/* ================================================= */
+/* ================= LAYOUT ======================== */
+/* ================================================= */
 
-.editor {
-  flex: 3;
-  min-height: 200px;
-  padding: 1rem;
-  font-family: monospace;
-  font-size: 1.2rem;
-  line-height: 1.4rem;
-  background-color: #00000093;
-  color: #ff4c82;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  border: none;
-  box-sizing: border-box;
-}
-
-#output {
-  flex: 2;
-  min-height: 150px;
-  padding: 1rem;
-  font-family: monospace;
-  font-size: 1.2rem;
-  line-height: 1.4rem;
-  background-color: #00000093;
-  color: #ff4c82;
-  overflow-y: auto;
-  white-space: pre-wrap;
-  border: none;
-  box-sizing: border-box;
-}
-
-.btn-container {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  max-width: 1000px;
-}
-
-/* === RESPONSIVE === */
-@media (max-width: 980px) {
-
-  .editor-wrapper {
-    height: 35vh;
-    min-height: 300px;
-  }
-}
-
-@media (max-width: 760px) {
-
-  .editor,
-  #output {
-    width: 95%;
-    min-height: 30vh;
-    height: 35vh;
-  }
-}
-
-@media (max-width: 630px) {
-
-  .editor,
-  #output {
-    width: 95%;
-    min-height: 25vh;
-    height: 30vh;
-  }
-}
-
-
-.btn-container {
-  display: flex;
-  justify-content: flex-end;
-  width: 100%;
-  max-width: 1000px;
-}
-
-.error-line {
-  text-decoration: underline;
-  text-decoration-color: red;
-  text-decoration-thickness: 2px;
-}
-
-html::-webkit-scrollbar,
-body::-webkit-scrollbar {
-  display: none;
-}
-
-@keyframes gradientMove {
-
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-/* === TEXTOS === */
-p.typewriter.desc {
-  font-family: 'Courier New', monospace;
-  font-size: 1.15rem;
-  line-height: 1.8rem;
-
-  height: 9rem;
-  overflow: hidden;
-}
-
-p.typewriter.desc.visible {
-  opacity: 1;
-}
-
-.desc {
-  text-align: justify;
-  line-height: 1.6;
-  max-width: 630px;
-  font-size: 1.1rem;
-}
-
-/* === BOTONES === */
-.btn {
-  font-family: 'Courier New', monospace;
-  background: rgba(0, 0, 0, 0.705);
-  color: var(--fg);
-  border-radius: 0;
-  font-weight: 700;
-  font-size: 1.1rem;
-  text-decoration: none;
-  padding: 12px 20px;
-  transition: background 0.3s ease, transform 0.18s ease;
-  position: relative;
-  z-index: 1;
-}
-
-button#run {
-  width: 120px;
-  font-size: 1.2rem;
-  padding: 0.8rem 1.5rem;
-}
-
-
-.btn:hover {
-  background: rgba(0, 0, 0, 0.8);
-}
-
-.btn:active {
-  transform: translateY(1px);
-}
-
-
-.btn.secondary {
-  background: rgba(0, 0, 0, 0.712);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-weight: 600;
-}
-
-.btn.secondary:hover {
-  background: rgba(0, 0, 0, 0.7);
-}
-
-/* === LAYOUT === */
 .wrap {
   max-width: var(--max-w);
   margin: 0 auto;
   padding: 1rem;
 }
 
-/* === HEADER === */
+/* ================================================= */
+/* ================= HEADER ======================== */
+/* ================================================= */
+
 header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: var(--header-height);
-  z-index: 50;
+  z-index: 100;
 
   backdrop-filter: blur(6px);
   background: linear-gradient(180deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.3));
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 
   display: flex;
   align-items: center;
-  padding: 0.5rem;
-}
-
-header.shrink {
-  padding: 0.15rem 0;
-  backdrop-filter: blur(4px);
-}
-
-header.hide {
-  transform: translateY(-100%);
+  padding: 0 1rem;
 }
 
 .nav {
   display: flex;
-  align-items: center;
   justify-content: space-between;
+  align-items: center;
   width: 100%;
-  padding: 0 1rem; 
 }
 
 .brand {
@@ -257,20 +94,21 @@ header.hide {
 
 .logo-link img {
   width: 50px;
-  height: auto;
   display: block;
 }
 
 .brand-text h1 {
   font-family: 'SuperRetro', sans-serif;
-  font-weight: 400;
   font-size: 1rem;
+  font-weight: 400;
 }
 
 .brand-text p {
   font-size: 0.85rem;
   color: var(--muted);
 }
+
+/* NAV LINKS */
 
 .nav-links {
   display: flex;
@@ -282,286 +120,202 @@ header.hide {
   color: var(--fg);
   text-decoration: none;
   font-family: 'Courier New', monospace;
-  font-weight: 300;
   font-size: 1.1rem;
+  font-weight: 300;
   padding: 6px 4px;
   position: relative;
-  transition: color 0.2s ease, background 0.2s ease;
+  transition: opacity 0.2s ease;
+}
+
+.nav-links a:hover {
+  opacity: 0.7;
 }
 
 .nav-links a.active {
   font-weight: 700;
 }
 
-.nav-links a::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -4px;
-  height: 3px;
-  width: 0;
-  transform: translateX(-50%);
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  transition: width 0.25s ease;
-}
-
-.nav-links a:hover::after,
-.nav-links a.active::after {
-  width: 70%;
-}
-
-.nav-links a:active {
-  background: rgba(255, 255, 255, 0.08);
-}
+/* HAMBURGER */
 
 .hamburger {
   display: none;
   flex-direction: column;
   justify-content: space-around;
-  width: 30px;
-  height: 22px;
+  width: 25px;
+  height: 20px;
   cursor: pointer;
   margin-left: auto;
 }
 
 .hamburger span {
-  height: 3px;
+  height: 2px;
   background: var(--fg);
   border-radius: 2px;
-  transition: all 0.3s ease;
 }
 
-/* === HERO === */
-.hero {
+/* ================================================= */
+/* ================= HERO ========================== */
+/* ================================================= */
+
+body:not(.subpage) {
+  display: flex;
+  flex-direction: column;
+}
+
+body:not(.subpage) main.hero {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 2rem;
-  min-height: 80vh;
-  padding-top: calc(var(--header-height) + 4rem);
+
+  flex: 1;
+  min-height: 100vh;
+  padding-top: calc(var(--header-height) + 2rem);
+
+  max-width: var(--max-w);
+  margin: 0 auto;
 }
 
 .hero-left {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-items: flex-start;
-  margin-top: 3rem;
-  position: relative;
   z-index: 2;
 }
 
 .hero-right {
+  flex: 1;
   display: flex;
-  justify-content: center;
+  justify-content: flex-end;
   align-items: center;
+
   transform: scale(var(--img-scale)) translateX(var(--img-shift));
   transition: transform 0.3s ease;
-  overflow: visible;
-  z-index: 1;
-  margin-bottom: 1rem;
-}
-
-body.subpage main {
-  padding-top: calc(var(--header-height) + 2rem);
 }
 
 .profile-photo img {
   width: 100%;
   max-width: 420px;
-  height: auto;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4/5;
   object-fit: contain;
-  border-radius: 8px;
-  transition: transform 0.3s ease;
 }
 
-/* === TYPEWRITER === */
+/* ================================================= */
+/* ================= BOTONES ======================= */
+/* ================================================= */
+
+.btn {
+  font-family: 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.7);
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: 12px 20px;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+  transform: translateY(-2px);
+}
+
+.cta-row {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+/* ================================================= */
+/* ================= TYPEWRITER ==================== */
+/* ================================================= */
+
 .typewriter {
   font-family: 'Courier New', monospace;
-  display: block;
-  overflow: hidden;
+  display: inline-block;
 }
 
 h1.typewriter {
-  font-weight: 300;
-  font-size: 2rem;
-  margin: 0;
-
-  height: 2.4rem;
-  line-height: 2.4rem;
-  white-space: nowrap;
-  overflow: hidden;
+  min-height: 2.5rem;
+  line-height: 2.5rem;
 }
 
 h2.typewriter {
-  font-weight: 700;
-  font-size: 2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  width: auto;
-  animation: none;
+  min-height: 2.2rem;
+  line-height: 2.2rem;
 }
 
-@keyframes typing {
-  from {
-    width: 0;
-  }
-
-  to {
-    width: 100%;
-  }
+p.typewriter.desc {
+  max-width: 630px;
+  min-height: 7rem;
+  line-height: 1.7rem;
 }
 
-/* === CARDS === */
-.grid {
-  display: grid;
-  gap: 1rem;
-  grid-template-columns: 1fr;
+/* ================================================= */
+/* ================= SUBPAGES ====================== */
+/* ================================================= */
+
+body.subpage main {
+  padding-top: calc(var(--header-height) + 3rem);
 }
 
-.card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+/* ================================================= */
+/* ================= SANDBOX ======================= */
+/* ================================================= */
+
+.editor-wrapper {
+  display: flex;
+  flex-direction: column;
+  width: 95%;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 0.75rem;
+}
+
+.editor,
+#output {
+  min-height: 260px;
+  max-height: 500px;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  flex-wrap: wrap;
-  transition: transform 0.28s ease, box-shadow 0.28s ease;
-  cursor: pointer;
+  font-family: monospace;
+  font-size: 1.2rem;
+  line-height: 1.5rem;
+  background: rgba(0, 0, 0, 0.6);
+  color: #ff4c82;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  border: none;
 }
 
-.card:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.6);
-}
-
-.thumb {
-  width: 100%;
-  max-width: 180px;
-  aspect-ratio: 4/3;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  display: grid;
-  place-items: center;
-  font-weight: 800;
-  font-size: 0.9rem;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.card:hover .thumb {
-  transform: scale(1.05);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
-
-/* === CTA ROW === */
-.cta-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1.5rem;
-  justify-content: flex-start;
-}
-
-.cta-row .btn {
-  display: inline-flex;
-  justify-content: center;
-  min-width: max-content;
-}
-
-/* === RESPONSIVE === */
-
-@media (max-width: 980px) {
-
-  .editor,
-  #output {
-    width: 95%;
-    min-height: 25vh;
-    height: 35vh;
-  }
-
-  :root {
-    --img-scale: 2.8;
-    --img-shift: 0%;
-  }
-
-  .hero {
-    padding-top: calc(var(--header-height) + 4rem);
-    flex-direction: column-reverse;
-    align-items: center;
-  }
-
-  .hero-right {
-    max-width: 200px;
-    margin: 0 auto 1rem;
-  }
-
-  .hero-left {
-    align-items: center;
-    text-align: center;
-  }
-
-  h1.typewriter {
-    font-size: 1.4rem;
-  }
-
-  h2.typewriter {
-    font-size: 1.6rem;
-  }
-}
+/* ================================================= */
+/* ================= RESPONSIVE ==================== */
+/* ================================================= */
 
 @media (max-width: 760px) {
-  :root {
-    --img-scale: 2.8;
-    --img-shift: 0%;
-  }
 
-  .hero {
-    padding-top: calc(var(--header-height) + 4rem);
+  body:not(.subpage) main.hero {
     flex-direction: column-reverse;
+    text-align: center;
     align-items: center;
   }
 
   .hero-right {
-    max-width: 200px;
-    margin: 0 auto 1rem;
+    transform: scale(1.4) translateX(0);
   }
 
-  .hero-left {
-    align-items: center;
-    text-align: center;
-  }
-
-  h1.typewriter {
-    font-size: 1.4rem;
-  }
-
-  h2.typewriter {
-    font-size: 1.6rem;
-  }
-}
-
-@media (max-width: 630px) {
-
-  header {
-    padding-left: 0rem;
-    padding-right: 2rem;
-  }
-
-  :root {
-    --img-scale: 2.6;
-    --img-shift: 0%;
-  }
-
-  .hero {
-    padding-top: calc(var(--header-height) + 7rem);
+  .profile-photo img {
+    max-width: 280px;
   }
 
   .nav-links {
     display: none;
     flex-direction: column;
     width: 100%;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(0, 0, 0, 0.9);
     position: absolute;
     top: 100%;
     left: 0;
@@ -572,25 +326,28 @@ h2.typewriter {
   }
 
   .nav-links a {
-    padding: 12px 0;
     width: 100%;
     text-align: center;
-  }
-
-  .nav-links a::after {
-    display: none;
+    padding: 12px 0;
   }
 
   .hamburger {
     display: flex;
-    width: 25px;
-    height: 20px;
-    margin-left: auto;
-    transform: none;
+  }
+}
+
+/* ================================================= */
+/* ================= ANIMACIÓN ===================== */
+/* ================================================= */
+
+@keyframes gradientMove {
+
+  0%,
+  100% {
+    background-position: 0% 50%;
   }
 
-  .hamburger span {
-    height: 2px;
-    border-radius: 1px;
+  50% {
+    background-position: 100% 50%;
   }
 }

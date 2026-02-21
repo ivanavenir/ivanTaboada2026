@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: 'Courier New', monospace;
     background: #f0f0f0;
@@ -5,59 +9,70 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
+    margin: 0;
 }
 
+/* CONTENEDOR PRINCIPAL */
 .chat-container {
-    font-family: 'Courier New', monospace;
-    width: 400px;
-    background: #00000021;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    max-width: 400px;
+    padding: 20px; /* 🔥 un solo padding consistente */
     display: flex;
     flex-direction: column;
-    padding: 15px;
-    gap: 10px;
+    gap: 15px;
+
+    background: #00000021;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-.chat-box {
-    font-family: 'Courier New', monospace;
-    flex-grow: 1;
+/* EDITOR Y OUTPUT */
+.editor,
+#output {
+    width: 100%;
     padding: 15px;
-    overflow-y: auto;
     border: none;
     outline: none;
     background: #ffffff1c;
-}
-
-.input-area {
-    display: flex;
-    background: #35353527;
-    border-top: 0px solid #ccc;
-}
-
-.input-area input {
     font-family: 'Courier New', monospace;
-    flex-grow: 1;
-    border: none;
-    padding: 10px;
-    background: rgba(29, 29, 29, 0.2);
-    outline: none;
-    backdrop-filter: blur(8px);
     color: #ffffff;
 }
 
-.input-area input::placeholder {
-    color: rgba(255, 255, 255, 0.753);
+/* BOTÓN RUN */
+button#run {
+    align-self: flex-end; /* 🔥 lo alinea a la derecha */
+    padding: 10px 20px;
+    border: none;
+    background: #ff0062;
+    color: white;
+    cursor: pointer;
     font-family: 'Courier New', monospace;
 }
 
+/* INPUT AREA */
+.input-area {
+    display: flex;
+    width: 100%;
+    background: #35353527;
+}
+
+.input-area input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+    background: rgba(29, 29, 29, 0.2);
+    color: #ffffff;
+}
+
 .input-area button {
+    padding: 10px 20px;
+    border: none;
     background: #ff0062;
     color: white;
-    border: none;
-    padding: 10px 15px;
     cursor: pointer;
 }
 
+/* MENSAJES */
 .message {
     margin: 8px 0;
     padding: 8px 12px;
