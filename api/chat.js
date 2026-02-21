@@ -1,88 +1,83 @@
 import { getLocalResponse } from './localResponses.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// 1. Inicialización fuera del handler para optimizar el rendimiento (warm starts)
+// Inicializamos el cliente. 
+// Nota: El SDK de Google selecciona automáticamente la mejor versión de API (v1).
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 export default async function handler(req, res) {
-  // Solo permitimos peticiones POST
+  // 1. Verificación de seguridad básica
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Método no permitido. Usa POST.' });
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 
   try {
     const { message } = req.body;
     const userMessage = (message || "").trim();
 
-    // Validar que el mensaje no esté vacío
     if (!userMessage) {
-      return res.status(400).json({ text: "Por favor, escribe un mensaje válido." });
+      return res.status(400).json({ text: "El mensaje está vacío." });
     }
 
-    // 2. Lógica de Respuesta Local (FAQ o comandos internos)
+    // 2. Prioridad: Respuestas locales (FAQ/Caché)
     const localResponse = await getLocalResponse(userMessage);
     if (localResponse) {
-      console.log("Respuesta servida desde archivo local.");
-      return res.status(200).json({ text: localResponse, source: 'local' });
+      return res.status(200).json({ text: localResponse });
     }
 
-    // 3. Validación de la API Key
+    // 3. Verificación de API Key
     if (!process.env.GEMINI_API_KEY) {
-      console.error("ERROR: No se encontró la variable GEMINI_API_KEY.");
-      return res.status(500).json({ text: "Error de configuración en el servidor (Falta API Key)." });
+      throw new Error("La clave GEMINI_API_KEY no está configurada en las variables de entorno.");
     }
 
-    // 4. Configuración del modelo
-    // Usamos 'gemini-1.5-flash' que es el más compatible con el tier gratuito
+    // 4. Configuración del modelo - IMPORTANTE:
+    // Usamos "gemini-1.5-flash-latest" para asegurar que apunte a la versión estable actual
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "gemini-1.5-flash-latest" 
+    });
+
+    console.log("--- Iniciando consulta a Gemini 1.5 Flash ---");
+
+    // 5. Generación de contenido con manejo de errores de red
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: userMessage }] }],
       generationConfig: {
         temperature: 0.7,
-        topP: 0.8,
-        topK: 40,
-        maxOutputTokens: 1000,
+        maxOutputTokens: 800,
       },
     });
 
-    console.log("Enviando consulta a Google Gemini...");
-
-    // 5. Generar contenido
-    const result = await model.generateContent(userMessage);
     const response = await result.response;
-    
-    // El método .text() es una función, asegúrate de llamarla así:
     const text = response.text();
 
     if (!text) {
-      throw new Error("La IA devolvió una respuesta vacía.");
+      throw new Error("Google retornó una respuesta vacía.");
     }
 
-    console.log("Respuesta recibida exitosamente.");
-
-    // 6. Respuesta final al cliente
-    return res.status(200).json({ 
-      text: text,
-      source: 'ai' 
-    });
+    // 6. Éxito
+    return res.status(200).json({ text });
 
   } catch (error) {
-    console.error("Error detallado en Chat API:", error);
+    // 7. Manejo robusto de errores
+    console.error("Error en la API de Chat:", error.message);
 
-    // Manejo de errores específicos
-    if (error.status === 404) {
-      return res.status(404).json({ 
-        text: "Error: El modelo de Google no fue encontrado. Verifica el nombre del modelo en el código." 
+    // Error 404: El modelo no existe o la ruta de la API cambió
+    if (error.message.includes("404") || error.message.includes("not found")) {
+      return res.status(404).json({
+        text: "Error de configuración: El modelo de IA solicitado no está disponible. Por favor, contacta al administrador."
       });
     }
 
-    if (error.status === 429) {
-      return res.status(429).json({ 
-        text: "Has alcanzado el límite de mensajes gratuitos. Intenta de nuevo en unos instantes." 
+    // Error 429: Límite de cuota excedido (común en cuentas gratuitas)
+    if (error.message.includes("429") || error.message.includes("quota")) {
+      return res.status(429).json({
+        text: "Demasiadas solicitudes. Por favor, espera un minuto antes de volver a intentarlo."
       });
     }
 
-    return res.status(500).json({ 
-      text: "Hubo un problema al procesar tu mensaje. Inténtalo de nuevo." 
+    // Error genérico
+    return res.status(500).json({
+      text: "Lo siento, hubo un error técnico al procesar tu mensaje."
     });
   }
 }
