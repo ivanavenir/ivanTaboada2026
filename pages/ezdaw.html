@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -9,6 +8,7 @@
     <link rel="stylesheet" href="../css/style.css">
     <link rel="stylesheet" href="../css/ezdawStyle.css">
     <link rel="icon" href="../assets/icons/logo.png" type="image/png" sizes="24x24">
+    
     <script>
         window.addEventListener('load', () => {
             document.documentElement.style.visibility = 'visible';
@@ -19,6 +19,7 @@
 
 <body class="subpage">
     <header></header>
+    
     <main class="wrap hero">
         <div class="hero-left">
             <h2 class="typewriter">EZDAW</h2>
@@ -28,8 +29,8 @@
                 <span class="typewriter-text"></span>
             </p>
 
-
             <div class="daw-container">
+                
                 <div class="controls">
                     <button id="play-pause" class="btn">Play</button>
                     <div class="bpm-control">
@@ -67,11 +68,46 @@
                         </div>
                     </div>
                 </div>
-            </div>
+
+                <div class="piano-roll-container">
+                    <div class="piano-roll-header">
+                        <h3>SYNTH LEAD</h3>
+                        <div class="switch-container">
+                            <span>Draw</span>
+                            <label class="switch">
+                                <input type="checkbox" id="mode-switch">
+                                <span class="slider"></span>
+                            </label>
+                            <span>Resize</span>
+                        </div>
+                    </div>
+
+                    <div class="piano-roll-wrapper">
+                        <div class="piano-keys-sidebar">
+                            <div class="key white" data-note="C4"><span>C4</span></div>
+                            <div class="key black" data-note="Bb3"></div>
+                            <div class="key white" data-note="B3"><span>B3</span></div>
+                            <div class="key black" data-note="Ab3"></div>
+                            <div class="key white" data-note="A3"><span>A3</span></div>
+                            <div class="key black" data-note="Gb3"></div>
+                            <div class="key white" data-note="G3"><span>G3</span></div>
+                            <div class="key black" data-note="F3"></div>
+                            <div class="key white" data-note="F3"><span>F3</span></div>
+                            <div class="key white" data-note="E3"><span>E3</span></div>
+                            <div class="key black" data-note="Eb3"></div>
+                            <div class="key white" data-note="D3"><span>D3</span></div>
+                            <div class="key black" data-note="Db3"></div>
+                            <div class="key white" data-note="C3"><span>C3</span></div>
+                        </div>
+
+                        <div id="piano-sequencer"></div>
+                    </div>
+                </div>
+
+            </div> </div>
     </main>
 
     <script src="../js/main.js" defer></script>
     <script src="../js/ezdaw.js" defer></script>
 </body>
-
 </html>

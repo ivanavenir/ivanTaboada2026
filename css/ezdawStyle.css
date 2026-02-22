@@ -1,113 +1,228 @@
-.editor-wrapper, .daw-container {
-    width: 100%; 
-    max-width: 1200px; 
+/* --- VARIABLES Y FUENTE HARDCODE --- */
+:root {
+    --bg-dark: #121212;
+    --panel-bg: #1a1a1a;
+    --accent: #ff4c82;
+    --synth-green: #50ef50;
+    --grid-line: rgba(255, 255, 255, 0.05);
+    --measure-line: rgba(0, 0, 0, 0.4);
+    /* Hardcode de la fuente Typewriter de tus títulos */
+    --main-font: 'Courier New', Courier, monospace;
 }
 
-.sequencer-grid {
-    display: grid;
-    grid-template-columns: repeat(16, 1fr); 
-    gap: 8px; 
-    flex: 1; 
+/* Aplicación global de fuente en el DAW */
+.daw-container, 
+.daw-container button, 
+.daw-container input, 
+.instrument-labels span, 
+.piano-roll-header h3,
+.key,
+#bpm-display {
+    font-family: var(--main-font) !important;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
 }
 
-.pad {
+.daw-container {
     width: 100%;
-    min-height: 60px; 
-    border-radius: none; 
-    cursor: pointer;
-    border: none;
-    background: #222;
-    transition: transform 0.1s;
+    max-width: 1250px;
+    margin: 0 auto;
+    background: var(--bg-dark);
+    padding: 20px;
+    border: 1px solid #333;
 }
 
-.pad.active {
-    background: #ff4c82; 
-    box-shadow: 0 0 10px #ff4c82;
-}
-
-.pad.current {
-    border: none;
-}
-
+/* --- CONTROLES SUPERIORES --- */
 .controls {
     display: flex;
     align-items: center;
     gap: 2rem;
-    margin-bottom: 1rem;
+    margin-bottom: 20px;
+    background: var(--panel-bg);
+    padding: 15px;
+    border: 1px solid #333;
 }
 
+#play-pause {
+    padding: 8px 25px;
+    background: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#bpm-display {
+    font-size: 0.9rem;
+    color: #fff;
+}
+
+/* --- SECUENCIADOR DE BATERÍA --- */
 .sequencer-wrapper {
     display: flex;
-    gap: 20px;
-    background: #111;
-    padding: 20px;
-    border-radius: none;
-    overflow-x: auto;
-}
-
-.effects-panel {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-around;
-    gap: 10px;
-    padding-left: 15px;
-    border-left: 1px solid #333;
-}
-
-.knob-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    height: 70px; /* Misma altura que tus pads */
-    justify-content: center;
-}
-
-.knob-group label {
-    font-size: 0.6rem;
-    color: var(--muted);
-    margin-bottom: 5px;
-}
-
-.knob {
-    -webkit-appearance: none;
-    width: 60px;
-    height: 4px;
-    background: #333;
-    border-radius: none;
-    outline: none;
-}
-
-.knob::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    background: #ff4c82;
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 0 5px #ff4c82;
+    gap: 15px;
+    background: var(--panel-bg);
+    padding: 25px;
+    margin-bottom: 30px;
+    border: 1px solid #333;
 }
 
 .instrument-labels {
     display: flex;
     flex-direction: column;
-    justify-content: space-around; 
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    font-size: 0.9rem;
-    color: var(--muted);
-    text-align: right;
-    min-width: 80px;
+    gap: 8px;
 }
 
 .instrument-labels span {
-    height: 50px; 
-    margin-bottom: 8px; 
-    font-size: 1rem;
+    height: 60px;
     display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-width: 120px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #fff;
+    padding-right: 20px;
+}
+
+.sequencer-grid {
+    display: grid;
+    grid-template-columns: repeat(16, 1fr);
+    grid-template-rows: repeat(4, 60px);
+    gap: 8px;
+    flex: 1;
+}
+
+.pad {
+    background: #2a2a2a;
+    border: none;
+    cursor: pointer;
+    border-radius: 2px;
+}
+
+.pad.active {
+    background: var(--accent);
+    box-shadow: 0 0 15px rgba(255, 76, 130, 0.4);
+}
+
+.pad.current { outline: 2px solid #fff; }
+
+/* --- SLIDERS DE TONE (REDISEÑADOS) --- */
+.effects-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-left: 15px;
+}
+
+.knob-group {
+    height: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
 }
 
-.pad[data-row="0"].active { background: #ff4800; box-shadow: 0 0 10px #ff4800; } 
-.pad[data-row="1"].active { background: #ff4c82; box-shadow: 0 0 10px #ff4c82; } 
-.pad[data-row="2"].active { background: #00f2ff; box-shadow: 0 0 10px #00f2ff; } 
-.pad[data-row="3"].active { background: #adff2f; box-shadow: 0 0 10px #adff2f; } 
+.knob-group label {
+    font-size: 0.6rem;
+    color: #888;
+    margin-bottom: 4px;
+}
+
+/* Estilo del slider lineal */
+.knob {
+    -webkit-appearance: none;
+    width: 60px;
+    height: 4px;
+    background: #333;
+    outline: none;
+    border-radius: 2px;
+}
+
+.knob::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 12px;
+    height: 12px;
+    background: var(--accent);
+    border-radius: 50%;
+    cursor: pointer;
+    border: 2px solid #000;
+}
+
+/* --- PIANO ROLL --- */
+.piano-roll-container {
+    background: var(--panel-bg);
+    border: 1px solid #333;
+}
+
+.piano-roll-header {
+    background: #222;
+    padding: 12px 20px;
+    border-bottom: 1px solid #333;
+}
+
+.piano-roll-header h3 {
+    font-size: 0.9rem;
+    color: #fff;
+    margin: 0;
+}
+
+/* Eliminamos el switch del HTML (no necesita CSS especial ahora) */
+.switch-container { display: none; } 
+
+.piano-roll-wrapper {
+    display: flex;
+    height: 450px;
+    overflow: auto;
+    position: relative;
+    background: #111;
+}
+
+.piano-keys-sidebar {
+    width: 80px;
+    position: sticky;
+    left: 0;
+    z-index: 30;
+    background: #222;
+    border-right: 1px solid #444;
+}
+
+.key {
+    height: 35px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-bottom: 1px solid #111;
+}
+
+.key.white { background: #333; color: #fff; }
+.key.black { background: #1a1a1a; color: #777; width: 90%; }
+
+#piano-sequencer {
+    position: relative;
+    width: 1600px;
+    height: 490px;
+    background-color: #1a1a1a;
+    background-image: 
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to right, var(--measure-line) 2px, transparent 2px);
+    background-size: 100% 35px, 100px 100%, 400px 100%;
+}
+
+.piano-pad.active {
+    background: linear-gradient(to bottom, var(--synth-green), #27ae60) !important;
+    border: 1px solid #afffaf;
+    z-index: 10;
+}
+
+.resizer-overlay {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 15px;
+    height: 100%;
+    cursor: col-resize;
+}
