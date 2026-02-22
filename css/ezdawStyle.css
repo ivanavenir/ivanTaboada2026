@@ -1,228 +1,309 @@
-/* --- VARIABLES Y FUENTE HARDCODE --- */
+/* --- VARIABLES Y CONFIGURACIÓN GLOBAL --- */
 :root {
-    --bg-dark: #121212;
-    --panel-bg: #1a1a1a;
-    --accent: #ff4c82;
-    --synth-green: #50ef50;
-    --grid-line: rgba(255, 255, 255, 0.05);
-    --measure-line: rgba(0, 0, 0, 0.4);
-    /* Hardcode de la fuente Typewriter de tus títulos */
     --main-font: 'Courier New', Courier, monospace;
+    --bg-black: #0f0f0f;
+    --accent-pink: #ff007f;
+    --accent-orange: #ffa034;
+    --border-color: #2a2a2a;
+    --text-gray: #aaaaaa;
+    --grid-color: #1a1a1a;
 }
 
-/* Aplicación global de fuente en el DAW */
-.daw-container, 
-.daw-container button, 
-.daw-container input, 
-.instrument-labels span, 
-.piano-roll-header h3,
-.key,
-#bpm-display {
-    font-family: var(--main-font) !important;
+* { box-sizing: border-box; }
+
+body {
+    background-color: #f8748c;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    min-height: 100vh;
+}
+
+.typewriter { font-family: var(--main-font) !important; }
+
+.main-title {
+    font-size: 2rem;
+    color: #fff;
+    margin: 0 0 5px 0;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
 }
 
-.daw-container {
-    width: 100%;
-    max-width: 1250px;
-    margin: 0 auto;
-    background: var(--bg-dark);
-    padding: 20px;
-    border: 1px solid #333;
+.desc {
+    color: #fff;
+    font-size: 0.85rem;
+    line-height: 1.4;
+    margin-bottom: 15px;
 }
 
-/* --- CONTROLES SUPERIORES --- */
+/* --- CONTENEDOR PRINCIPAL --- */
+.wrap.hero {
+    background-color: #000000e3;
+    width: 95%;
+    max-width: 1100px;
+    padding: 15px 25px;
+    border: 2px solid #000;
+    margin-top: 100px;
+}
+
+/* --- CONTROLES SUPERIORES (CORREGIDO Y CON BOTÓN GRADIENTE) --- */
 .controls {
     display: flex;
     align-items: center;
-    gap: 2rem;
+    gap: 30px;
+    padding: 15px 20px;
+    background: #050505;
+    border: 1px solid var(--border-color);
     margin-bottom: 20px;
-    background: var(--panel-bg);
-    padding: 15px;
-    border: 1px solid #333;
 }
 
-#play-pause {
+.control-group {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.label-fixed {
+    display: inline-block;
+    width: 100px; 
+    font-size: 0.75rem;
+    color: #fff;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.controls input[type=range] {
+    width: 130px; 
+}
+
+/* EL BOTÓN: Rosa con Orange Gradient, Sin 3D */
+.btn {
+    background: linear-gradient(135deg, var(--accent-pink) 0%, var(--accent-orange) 100%);
+    color: #fff;
+    border: none; /* Eliminado el borde blanco para resaltar el gradiente */
     padding: 8px 25px;
-    background: #000;
-    color: #fff;
-    border: 1px solid #fff;
     cursor: pointer;
+    min-width: 100px;
+    text-align: center;
+    font-family: var(--main-font);
     font-weight: bold;
+    text-transform: uppercase;
+    transition: opacity 0.2s ease, transform 0.1s ease;
 }
 
-#bpm-display {
-    font-size: 0.9rem;
-    color: #fff;
+.btn:hover {
+    opacity: 0.9;
+    background: linear-gradient(135deg, var(--accent-orange) 0%, var(--accent-pink) 100%);
 }
 
-/* --- SECUENCIADOR DE BATERÍA --- */
+.btn:active {
+    transform: scale(0.96);
+}
+
+/* --- BATERÍA --- */
 .sequencer-wrapper {
     display: flex;
-    gap: 15px;
-    background: var(--panel-bg);
-    padding: 25px;
-    margin-bottom: 30px;
-    border: 1px solid #333;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    margin-bottom: 20px;
 }
 
 .instrument-labels {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    justify-content: space-around;
+    height: 175px; 
 }
 
 .instrument-labels span {
-    height: 60px;
+    font-size: 0.65rem;
+    color: var(--text-gray);
+    height: 40px;
     display: flex;
     align-items: center;
-    justify-content: flex-end;
-    min-width: 120px;
-    font-size: 0.8rem;
-    font-weight: bold;
-    color: #fff;
-    padding-right: 20px;
+}
+
+.sequencer-relative-container {
+    position: relative;
+    width: 555px; 
+    height: 175px; 
 }
 
 .sequencer-grid {
     display: grid;
-    grid-template-columns: repeat(16, 1fr);
-    grid-template-rows: repeat(4, 60px);
-    gap: 8px;
-    flex: 1;
+    grid-template-columns: repeat(16, 30px);
+    grid-template-rows: repeat(4, 40px);
+    gap: 5px;
 }
 
 .pad {
-    background: #2a2a2a;
-    border: none;
+    background: transparent;
+    border: 1px solid #333;
     cursor: pointer;
-    border-radius: 2px;
+    height: 40px;
+    transition: border-color 0.2s;
 }
 
 .pad.active {
-    background: var(--accent);
-    box-shadow: 0 0 15px rgba(255, 76, 130, 0.4);
+    background: var(--accent-pink);
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 8px var(--accent-pink);
 }
 
-.pad.current { outline: 2px solid #fff; }
-
-/* --- SLIDERS DE TONE (REDISEÑADOS) --- */
-.effects-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    padding-left: 15px;
+.playhead-drum {
+    position: absolute;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    background: var(--accent-pink);
+    box-shadow: 0 0 10px var(--accent-pink);
+    z-index: 50;
+    pointer-events: none;
 }
 
-.knob-group {
-    height: 60px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.knob-group label {
-    font-size: 0.6rem;
-    color: #888;
-    margin-bottom: 4px;
-}
-
-/* Estilo del slider lineal */
-.knob {
-    -webkit-appearance: none;
-    width: 60px;
-    height: 4px;
-    background: #333;
-    outline: none;
-    border-radius: 2px;
-}
-
-.knob::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 12px;
-    height: 12px;
-    background: var(--accent);
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid #000;
-}
-
-/* --- PIANO ROLL --- */
+/* --- PIANO ROLL (FIX DE CLICKABILIDAD NOTAS C3-E3) --- */
 .piano-roll-container {
-    background: var(--panel-bg);
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
+    background: #050505;
+    position: relative;
+    overflow: hidden;
+    height: 282px; /* 240px de las notas + 2px de los bordes superior/inferior */
 }
-
-.piano-roll-header {
-    background: #222;
-    padding: 12px 20px;
-    border-bottom: 1px solid #333;
-}
-
-.piano-roll-header h3 {
-    font-size: 0.9rem;
-    color: #fff;
-    margin: 0;
-}
-
-/* Eliminamos el switch del HTML (no necesita CSS especial ahora) */
-.switch-container { display: none; } 
 
 .piano-roll-wrapper {
     display: flex;
-    height: 450px;
-    overflow: auto;
+    height: 217px; /* Altura exacta de las 8 notas */
+    overflow-x: auto;
+    overflow-y: hidden; /* Evita que el usuario haga scroll hacia el espacio negro */
     position: relative;
-    background: #111;
 }
 
 .piano-keys-sidebar {
-    width: 80px;
+    width: 50px;
+    background: #0a0a0a;
     position: sticky;
     left: 0;
-    z-index: 30;
-    background: #222;
-    border-right: 1px solid #444;
+    z-index: 100;
+    border-right: 1px solid #333;
 }
 
 .key {
-    height: 35px;
+    height: 30px;
+    border-bottom: 1px solid #000;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-    border-bottom: 1px solid #111;
+    font-size: 0.5rem;
+    color: #666;
+    background: #0f0f0f;
 }
-
-.key.white { background: #333; color: #fff; }
-.key.black { background: #1a1a1a; color: #777; width: 90%; }
 
 #piano-sequencer {
     position: relative;
     width: 1600px;
-    height: 490px;
-    background-color: #1a1a1a;
+    /* FIX: Cambiado de 390px a 240px para que las notas de abajo sean clickeables */
+    height: 240px; 
     background-image: 
-        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px),
-        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
-        linear-gradient(to right, var(--measure-line) 2px, transparent 2px);
-    background-size: 100% 35px, 100px 100%, 400px 100%;
+        linear-gradient(to bottom, #111 1px, transparent 1px),
+        linear-gradient(to right, #111 1px, transparent 1px);
+    background-size: 100% 30px, 100px 100%;
+}
+
+/* Añade esto a tu CSS */
+.piano-pad {
+    position: absolute;
+    background: transparent;
+    border: 1px solid #222;
+    height: 30px;
+    display: flex; /* Permite alinear el resizer al final */
+    justify-content: flex-end; 
+    cursor: pointer;
+}
+
+/* El tirador ahora es invisible pero mantiene su área de clic */
+.resizer {
+    width: 10px;        /* Mantenemos el ancho para que sea fácil de atrapar */
+    height: 100%;
+    background: transparent; /* Totalmente invisible */
+    cursor: ew-resize;   /* El cursor cambia para avisar que puedes estirar */
+    position: absolute;
+    right: 0;           /* Se pega al borde derecho */
+    top: 0;
+}
+
+/* Opcional: Si quieres una pequeña señal visual SOLO cuando pasas el mouse */
+.resizer:hover {
+    background: rgba(255, 255, 255, 0.05); /* Un brillo casi imperceptible */
 }
 
 .piano-pad.active {
-    background: linear-gradient(to bottom, var(--synth-green), #27ae60) !important;
-    border: 1px solid #afffaf;
+    background: var(--accent-orange);
+    border-color: var(--accent-orange);
+    box-shadow: 0 0 10px var(--accent-orange);
     z-index: 10;
 }
 
-.resizer-overlay {
+.playhead {
     position: absolute;
-    right: 0;
     top: 0;
-    width: 15px;
+    width: 2px;
     height: 100%;
-    cursor: col-resize;
+    background: var(--accent-orange);
+    box-shadow: 0 0 10px var(--accent-orange);
+    z-index: 15;
+    pointer-events: none;
 }
+
+/* --- CONFIGURACIÓN DE SLIDERS ESTÉTICOS --- */
+input[type=range] {
+    -webkit-appearance: none;
+    background: transparent;
+    cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 4px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 2px;
+}
+
+input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    height: 16px;
+    width: 8px;
+    background: #fff;
+    border: 1px solid #000;
+    margin-top: -7px;
+    transition: all 0.2s ease;
+}
+
+input[type=range]:hover::-webkit-slider-thumb {
+    background: var(--accent-pink);
+    transform: scaleY(1.2);
+}
+
+.knob-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.knob-group label {
+    font-size: 0.6rem;
+    color: var(--text-gray);
+    width: 70px; 
+    text-align: right;
+    letter-spacing: 1px;
+}
+
+/* --- SCROLLBAR --- */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: #0a0a0a; }
+::-webkit-scrollbar-thumb { background: #333; border-radius: 4px; }

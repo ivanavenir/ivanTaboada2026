@@ -1,240 +1,255 @@
 /**
- * EZDAW - Professional Audio Engine & Sequencer
- * Features: Polyphony, Smart Resizing (FL Style), Magnetic Snap, Right-Click Erase.
+ * EZDAW Core - Edición "Background Play"
+ * Incluye: Resize de notas, Reset de huella y Audio estable en segundo plano.
  */
 
-// 1. WEB WORKER (Precisión de reloj profesional)
-const workerCode = `
-    let timerID = null;
-    self.onmessage = function(e) {
-        if (e.data === "start") {
-            timerID = setInterval(() => postMessage("tick"), 25);
-        } else if (e.data === "stop") {
-            clearInterval(timerID);
-            timerID = null;
-        }
-    };
-`;
-const timerWorker = new Worker(URL.createObjectURL(new Blob([workerCode], { type: 'application/javascript' })));
-
-// 2. CONFIGURACIÓN DE AUDIO CORE
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-const limiter = audioCtx.createDynamicsCompressor();
-const masterGain = audioCtx.createGain();
-
-limiter.threshold.setValueAtTime(-3, audioCtx.currentTime); // Compresión para polifonía
-limiter.connect(masterGain);
-masterGain.connect(audioCtx.destination);
-masterGain.gain.value = 0.6; // Margen de volumen para evitar saturación
-
-// 3. FILTROS Y ESTADO
-const instrumentFilters = [];
-for (let i = 0; i < 4; i++) {
-    const filter = audioCtx.createBiquadFilter();
-    filter.type = "lowpass";
-    filter.frequency.value = i < 2 ? 3000 : 10000;
-    filter.connect(limiter);
-    instrumentFilters.push(filter);
-}
-
-const notes = {
-    "C4": 261.63, "Bb3": 233.08, "B3": 246.94, "Ab3": 207.65, 
-    "A3": 220.00, "Gb3": 185.00, "G3": 196.00, "F3": 174.61,
-    "E3": 164.81, "Eb3": 155.56, "D3": 146.83, "Db3": 138.59, "C3": 130.81
-};
-const noteNames = Object.keys(notes);
-const STEP_WIDTH = 100;  
-const STEP_HEIGHT = 35; 
-
+let audioCtx = null;
 let isPlaying = false;
 let currentStep = 0;
 let bpm = 140;
-let nextStepTime = 0;
+let nextStepTime = 0.0;
+const scheduleAheadTime = 0.1; // Cuánto tiempo miramos hacia el futuro (en segundos)
+let timerID = null; // ID del reloj para segundo plano
+
+// Variables para el Resize (Estiramiento)
 let isResizing = false;
-let currentResizingPad = null;
+let currentPad = null;
+let startX, startWidth;
 
-// 4. CARGA DE SAMPLES
-const sampleUrls = ['../assets/audio/kick.wav', '../assets/audio/snare.wav', '../assets/audio/hihat.wav', '../assets/audio/openhat.wav'];
+const notes = { "C4": 261.63, "B3": 246.94, "A3": 220.00, "G3": 196.00, "F3": 174.61, "E3": 164.81, "D3": 146.83, "C3": 130.81 };
+const noteNames = Object.keys(notes);
 const audioBuffers = [null, null, null, null];
+const filters = [null, null, null, null];
+const sampleUrls = [
+    '../assets/audio/kick.wav',
+    '../assets/audio/snare.wav',
+    '../assets/audio/hihat.wav',
+    '../assets/audio/openhat.wav',
+    '../assets/audio/industrial_synth.wav'
+];
 
-async function loadSamples() {
+// --- 1. INICIALIZACIÓN DE AUDIO ---
+async function initAudio() {
+    if (audioCtx) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
     for (let i = 0; i < sampleUrls.length; i++) {
+        const filter = audioCtx.createBiquadFilter();
+        filter.type = 'lowpass';
+        filter.frequency.value = 3000;
+        filter.connect(audioCtx.destination);
+        filters[i] = filter;
+
         try {
             const response = await fetch(sampleUrls[i]);
             const arrayBuffer = await response.arrayBuffer();
             audioBuffers[i] = await audioCtx.decodeAudioData(arrayBuffer);
-        } catch (err) { console.warn(`Sample ${i} no cargado, usando síntesis.`); }
+        } catch (e) { console.error("Error cargando sample:", i); }
     }
 }
-loadSamples();
 
-// 5. GENERACIÓN DE INTERFAZ
-const sequencer = document.getElementById('sequencer');
-const pianoSequencer = document.getElementById('piano-sequencer');
-
-// Drum Grid
+// --- 2. GENERACIÓN DE GRID DE BATERÍA ---
+const sequencerGrid = document.getElementById('sequencer');
 for (let i = 0; i < 4; i++) {
     for (let j = 0; j < 16; j++) {
         const pad = document.createElement('button');
         pad.classList.add('pad');
         pad.dataset.row = i;
         pad.dataset.step = j;
-        pad.addEventListener('mousedown', (e) => {
+        pad.onmousedown = (e) => {
             if (e.button === 2) pad.classList.remove('active');
             else pad.classList.toggle('active');
-        });
-        pad.addEventListener('contextmenu', e => e.preventDefault());
-        sequencer.appendChild(pad);
+        };
+        sequencerGrid.appendChild(pad);
     }
 }
 
-// Piano Roll Grid (Lógica FL Studio)
+// --- 3. GENERACIÓN DE PIANO ROLL (Con Resizer Invisible y Reset) ---
+const pianoSequencer = document.getElementById('piano-sequencer');
 noteNames.forEach((note, rowIndex) => {
     for (let j = 0; j < 16; j++) {
         const pad = document.createElement('div');
         pad.classList.add('piano-pad');
-        pad.style.left = (j * STEP_WIDTH) + "px";
-        pad.style.top = (rowIndex * STEP_HEIGHT) + "px";
-        pad.style.width = STEP_WIDTH + "px";
-        pad.style.height = STEP_HEIGHT + "px";
-        
+        pad.style.left = (j * 100) + "px";
+        pad.style.top = (rowIndex * 30) + "px";
+        pad.style.width = "100px";
+        pad.style.height = "30px";
         pad.dataset.note = note;
         pad.dataset.step = j;
-        pad.dataset.duration = 1;
 
-        // Overlay para estirar
         const resizer = document.createElement('div');
-        resizer.classList.add('resizer-overlay');
+        resizer.classList.add('resizer');
         pad.appendChild(resizer);
 
-        pad.addEventListener('mousedown', (e) => {
-            if (e.button === 2) { // Clic derecho para borrar
+        pad.onmousedown = (e) => {
+            if (e.target.classList.contains('resizer')) return;
+
+            if (e.button === 2) {
                 pad.classList.remove('active');
-                pad.style.width = STEP_WIDTH + "px";
-                pad.dataset.duration = 1;
-                return;
-            }
-
-            if (pad.classList.contains('active')) {
-                if (e.target.classList.contains('resizer-overlay')) {
-                    isResizing = true;
-                    currentResizingPad = pad;
-                }
+                pad.style.width = "100px"; // Reset de huella
             } else {
-                pad.classList.add('active');
-                playNote(note, audioCtx.currentTime, 0.15);
+                if (pad.classList.contains('active')) {
+                    pad.classList.remove('active');
+                    pad.style.width = "100px"; // Reset al desactivar
+                } else {
+                    pad.classList.add('active');
+                    if (audioCtx) playNote(note, audioCtx.currentTime);
+                }
             }
-            e.preventDefault();
-        });
-
-        pad.addEventListener('contextmenu', e => e.preventDefault());
+        };
         pianoSequencer.appendChild(pad);
     }
 });
 
-// 6. LÓGICA DE RESIZE (MouseMove Global)
-window.addEventListener('mousemove', (e) => {
-    if (!isResizing || !currentResizingPad) return;
-
-    const rect = pianoSequencer.getBoundingClientRect();
-    const mouseX = e.clientX - rect.left + pianoSequencer.scrollLeft;
-    const startX = parseInt(currentResizingPad.dataset.step) * STEP_WIDTH;
-    
-    // Snap magnético al grid
-    let steps = Math.max(1, Math.round((mouseX - startX) / STEP_WIDTH));
-    const maxSteps = 16 - parseInt(currentResizingPad.dataset.step);
-    steps = Math.min(steps, maxSteps);
-    
-    currentResizingPad.dataset.duration = steps;
-    currentResizingPad.style.width = (steps * STEP_WIDTH) + "px";
+// --- 4. LÓGICA DE RESIZE (ESTIRAMIENTO) ---
+document.addEventListener('mousedown', e => {
+    if (e.target.classList.contains('resizer')) {
+        isResizing = true;
+        currentPad = e.target.parentElement;
+        startX = e.clientX;
+        startWidth = parseInt(window.getComputedStyle(currentPad).width, 10);
+        document.body.style.cursor = 'ew-resize';
+        e.preventDefault();
+    }
 });
 
-window.addEventListener('mouseup', () => {
-    isResizing = false;
-    currentResizingPad = null;
+document.addEventListener('mousemove', e => {
+    if (!isResizing || !currentPad) return;
+    const deltaX = e.clientX - startX;
+    const newWidth = startWidth + deltaX;
+    const snappedWidth = Math.max(100, Math.round(newWidth / 50) * 50);
+    currentPad.style.width = snappedWidth + 'px';
 });
 
-// 7. MOTOR DE AUDIO (Polifónico)
-function playSound(row, time) {
-    if (audioBuffers[row]) {
-        const source = audioCtx.createBufferSource();
-        source.buffer = audioBuffers[row];
-        source.connect(instrumentFilters[row]);
-        source.start(time);
+document.addEventListener('mouseup', () => {
+    if (isResizing) {
+        isResizing = false;
+        currentPad = null;
+        document.body.style.cursor = 'default';
+    }
+});
+
+// --- 5. LÓGICA DE AUDIO (REPRODUCCIÓN) ---
+function playSound(index, time) {
+    if (!audioBuffers[index]) return;
+    const source = audioCtx.createBufferSource();
+    source.buffer = audioBuffers[index];
+    source.playbackRate.value = document.getElementById('drum-pitch-control').value;
+    source.connect(filters[index]);
+    source.start(time);
+}
+
+function playNote(note, time) {
+    if (!audioBuffers[4]) return;
+
+    const decayValue = parseFloat(document.getElementById('piano-decay').value);
+    const activePads = document.querySelectorAll(`.piano-pad[data-note="${note}"].active`);
+    let noteDuration = 0.15;
+    
+    activePads.forEach(p => {
+        if(parseInt(p.dataset.step) === currentStep) {
+            noteDuration = (parseInt(p.style.width) / 100) * (60 / bpm / 4);
+        }
+    });
+
+    const source = audioCtx.createBufferSource();
+    const gain = audioCtx.createGain();
+    const filter = audioCtx.createBiquadFilter();
+
+    source.buffer = audioBuffers[4];
+
+    // Pitch (Afinación)
+    const baseFreq = 130.81; 
+    const playbackRate = notes[note] / baseFreq;
+    source.playbackRate.setValueAtTime(playbackRate, time);
+
+    // FILTRO: Bajamos la Q de 22 a 8 para quitar el "chillido" que distorsiona
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(3500, time);
+    filter.Q.setValueAtTime(8, time); 
+
+    const releaseTime = decayValue;
+    const totalDuration = noteDuration + releaseTime;
+
+    // ENVOLVENTE: Bajamos la ganancia de 0.7 a 0.4 para evitar el clipping
+    gain.gain.setValueAtTime(0, time);
+    // Un ataque de 0.01s es lo suficientemente rápido para ser seco pero evita distorsión inicial
+    gain.gain.linearRampToValueAtTime(0.4, time + 0.01); 
+    gain.gain.setValueAtTime(0.4, time + noteDuration);
+    
+    // Release lineal más controlado
+    gain.gain.linearRampToValueAtTime(0.0001, time + totalDuration);
+
+    source.connect(filter);
+    filter.connect(gain);
+    
+    // OPCIONAL: Conectar a un compresor si lo tienes, o directo al destino
+    gain.connect(audioCtx.destination);
+
+    source.start(time);
+    source.stop(time + totalDuration);
+}
+
+// --- 6. MOTOR DE TIEMPO (ESTABLE EN SEGUNDO PLANO) ---
+function nextNote() {
+    const secondsPerBeat = 60.0 / bpm;
+    nextStepTime += 0.25 * secondsPerBeat; // Avanzar 1/16 de nota
+    currentStep = (currentStep + 1) % 16;
+}
+
+function scheduleStep(step, time) {
+    // Audio: Se programa en el hardware (no se detiene al salir de la pestaña)
+    document.querySelectorAll(`.pad[data-step="${step}"].active`).forEach(p => {
+        playSound(parseInt(p.dataset.row), time);
+    });
+    document.querySelectorAll(`.piano-pad[data-step="${step}"].active`).forEach(p => {
+        playNote(p.dataset.note, time);
+    });
+
+    // Visual: Se sincroniza mediante un pequeño retraso
+    const drawTime = (time - audioCtx.currentTime) * 1000;
+    setTimeout(() => {
+        if (!isPlaying) return;
+        document.getElementById('drum-playhead').style.left = (step * 35) + "px";
+        document.getElementById('playhead').style.left = (step * 100) + "px";
+    }, drawTime);
+}
+
+function scheduler() {
+    while (nextStepTime < audioCtx.currentTime + scheduleAheadTime) {
+        scheduleStep(currentStep, nextStepTime);
+        nextNote();
     }
 }
 
-function playNote(noteName, time, durationSecs) {
-    const osc = audioCtx.createOscillator();
-    const env = audioCtx.createGain();
-    const filter = audioCtx.createBiquadFilter();
+// --- 7. EVENTOS DE CONTROL ---
+document.getElementById('play-pause').onclick = async function () {
+    await initAudio();
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
 
-    osc.type = 'sawtooth';
-    osc.frequency.setValueAtTime(notes[noteName], time);
+    isPlaying = !isPlaying;
+    this.textContent = isPlaying ? "Stop" : "Play";
 
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(2500, time);
-    filter.frequency.exponentialRampToValueAtTime(400, time + durationSecs);
-
-    env.gain.setValueAtTime(0, time);
-    env.gain.linearRampToValueAtTime(0.15, time + 0.01); 
-    env.gain.exponentialRampToValueAtTime(0.001, time + durationSecs);
-
-    osc.connect(filter);
-    filter.connect(env);
-    env.connect(limiter);
-
-    osc.start(time);
-    osc.stop(time + durationSecs);
-}
-
-// 8. BUCLE DE TIEMPO
-timerWorker.onmessage = function () {
-    while (nextStepTime < audioCtx.currentTime + 0.1) {
-        const stepDuration = (60.0 / bpm / 4);
-
-        // Batería
-        document.querySelectorAll(`.pad[data-step="${currentStep}"]:not(.piano-pad)`).forEach(pad => {
-            pad.classList.add('current');
-            if (pad.classList.contains('active')) playSound(parseInt(pad.dataset.row), nextStepTime);
-            setTimeout(() => pad.classList.remove('current'), 100);
-        });
-
-        // Piano Roll Polifónico (Busca todas las notas que empiezan en este step)
-        document.querySelectorAll(`.piano-pad[data-step="${currentStep}"].active`).forEach(pad => {
-            pad.classList.add('current');
-            const noteDur = parseInt(pad.dataset.duration) * stepDuration;
-            playNote(pad.dataset.note, nextStepTime, noteDur);
-            setTimeout(() => pad.classList.remove('current'), 100);
-        });
-
-        nextStepTime += stepDuration;
-        currentStep = (currentStep + 1) % 16;
+    if (isPlaying) {
+        currentStep = 0;
+        nextStepTime = audioCtx.currentTime;
+        // Usamos setInterval para que el navegador no lo pause al 100%
+        timerID = setInterval(scheduler, 25);
+    } else {
+        clearInterval(timerID);
     }
 };
 
-// 9. EVENTOS DE INTERFAZ
-document.getElementById('play-pause').addEventListener('click', (e) => {
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    isPlaying = !isPlaying;
-    if (isPlaying) {
-        e.target.textContent = "Stop";
-        nextStepTime = audioCtx.currentTime;
-        timerWorker.postMessage("start");
-    } else {
-        e.target.textContent = "Play";
-        timerWorker.postMessage("stop");
-        currentStep = 0;
-    }
-});
-
-document.getElementById('bpm').addEventListener('input', (e) => {
-    bpm = parseInt(e.target.value);
+document.getElementById('bpm').oninput = (e) => {
+    bpm = e.target.value;
     document.getElementById('bpm-display').textContent = `${bpm} BPM`;
+};
+
+document.querySelectorAll('.drum-pitch-slider[data-row]').forEach(slider => {
+    slider.oninput = (e) => {
+        const row = e.target.dataset.row;
+        if (filters[row]) filters[row].frequency.value = e.target.value;
+    };
 });
 
-document.querySelectorAll('.knob').forEach(knob => {
-    knob.addEventListener('input', (e) => {
-        instrumentFilters[e.target.dataset.row].frequency.setTargetAtTime(e.target.value, audioCtx.currentTime, 0.05);
-    });
-});
+document.addEventListener('contextmenu', e => e.preventDefault());
