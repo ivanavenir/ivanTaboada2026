@@ -1,6 +1,7 @@
 import { getLocalResponse } from './localResponses.js';
 import OpenAI from "openai";
 
+// --- LOGICA API GROQ ---
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -13,8 +14,8 @@ export default async function handler(req, res) {
   }
 
   const client = new OpenAI({
-    apiKey: apiKey, // Aquí le pasamos tu variable directamente
-    baseURL: "https://api.groq.com/openai/v1", // Importante para que no intente ir a OpenAI
+    apiKey: apiKey,
+    baseURL: "https://api.groq.com/openai/v1",
   });
 
   try {
@@ -25,21 +26,26 @@ export default async function handler(req, res) {
       return res.status(400).json({ text: "Escribe un mensaje para continuar." });
     }
 
-    // 4. Tu lógica de respuestas locales
+// --- RESPUESTAS LOCALES ---
     const localResponse = await getLocalResponse(userMessage);
     if (localResponse) {
       return res.status(200).json({ text: localResponse });
     }
 
-    // 5. Consulta a Groq (Llama 3.3 es el modelo más balanceado y potente)
+// --- CONSULTA A GROQ PARA OPTIMIZAR RESPUESTAS ---
     const chatCompletion = await client.chat.completions.create({
       messages: [
-        { role: "system", content: "Eres un asistente inteligente y amable." },
+        { 
+          role: "system", 
+          content: "Eres un asistente inteligente, amable y conciso. " +
+                   "Responde siempre de forma clara y directa, usando un máximo de 2 o 3 párrafos cortos. " +
+                   "Evita explicaciones innecesariamente largas o repetitivas, y asegúrate de concluir tu idea por completo." 
+        },
         { role: "user", content: userMessage }
       ],
       model: "llama-3.3-70b-versatile",
-      temperature: 0.7,
-      max_tokens: 1024,
+      temperature: 0.6, 
+      max_tokens: 350, 
     });
 
     const aiResponse = chatCompletion.choices[0]?.message?.content;
@@ -53,7 +59,6 @@ export default async function handler(req, res) {
   } catch (error) {
     console.error("Error detallado:", error);
 
-    // Manejo de cuotas o errores de API
     if (error.status === 413 || error.status === 429) {
       return res.status(429).json({ text: "Límite de mensajes alcanzado. Intenta en un momento." });
     }

@@ -41,7 +41,7 @@ const responses = {
         es: ["Me encanta crear música, especialmente trap!", "Disfruto mucho jugar videojuegos.", "Programar es mi pasatiempo favorito."],
         en: ["I love creating music, especially trap!", "I really enjoy playing video games.", "Programming is my favorite hobby."]
     },
-    birthday: { // <-- AÑADIDA
+    birthday: { 
         es: ["Mi cumpleaños es el 18 de octubre.", "¡Celebro mi cumpleaños el 18 de octubre!"],
         en: ["My birthday is October 18th.", "I celebrate my birthday on October 18th!"]
     }
@@ -70,7 +70,7 @@ export async function getLocalResponse(userMessage) {
     const normalizedMessage = normalizeMessage(userMessage);
     const lang = detectLanguage(userMessage);
 
-    // Mapeo de detecciones
+    // --- MAPEO PALABRAS CLAVE (KEYWORDS) ---
     const isName = nameKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isAge = ageKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isBirthday = birthdayKeywords.some(k => normalizedMessage.includes(normalizeMessage(k))); // <-- AÑADIDA
@@ -88,7 +88,7 @@ export async function getLocalResponse(userMessage) {
         respuesta = lang === "en" ? "My name is Ivan!" : "Me puedes llamar Iván.";
     } else if (isAge) {
         respuesta = lang === "en" ? "I am 24 years old." : "Tengo 24 años.";
-    } else if (isBirthday) { // <-- AÑADIDA
+    } else if (isBirthday) { 
         respuesta = getRandom(responses.birthday[lang]);
     } else if (isPet) {
         respuesta = lang === "en" 
