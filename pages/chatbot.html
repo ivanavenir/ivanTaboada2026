@@ -32,59 +32,12 @@
 
         <div id="chat-box" class="chat-box"></div>
 
-        <div class="input-area">
-            <input type="text" id="user-input" placeholder="Escribe un mensaje..." />
-            <button id="send-btn" class="btn secondary">Send</button>
-        </div>
+        <form id="chat-form" class="input-area">
+            <input type="text" id="user-input" placeholder="Escribe un mensaje..." required autocomplete="off" />
+            <button type="submit" id="send-btn" class="btn secondary">Send</button>
+        </form>
     </div>
-    <script>
-        console.log("chatbot.html cargado correctamente");
 
-        const input = document.querySelector("#user-input");
-        const sendBtn = document.querySelector("#send-btn");
-        const chatBox = document.querySelector("#chat-box");
-
-        sendBtn.addEventListener("click", sendMessage);
-        input.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") sendMessage();
-        });
-
-        async function sendMessage() {
-            const message = input.value.trim();
-            if (!message) return;
-
-            addMessage("user", message);
-            input.value = "";
-
-            try {
-                console.log("Enviando mensaje al backend:", message);
-
-                const res = await fetch("/api/chat", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ message }),
-                });
-
-                if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-
-                const data = await res.json();
-                console.log("Respuesta del servidor:", JSON.stringify(data));
-
-                addMessage("bot", data.text || data.error || "No tengo respuesta");
-            } catch (err) {
-                console.error("Error al enviar mensaje:", err);
-                addMessage("bot", "Ocurrió un error al enviar tu mensaje");
-            }
-        }
-
-        function addMessage(sender, text) {
-            const div = document.createElement("div");
-            div.className = sender;
-            div.textContent = `${sender === "user" ? "USER:" : "IVÁN:"} ${text}`;
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-    </script>
     <script>
         class TypeWriter {
             constructor(element, speed = 100) {
@@ -111,6 +64,7 @@
     </script>
 
     <script src="../js/main.js" defer></script>
+    <script src="../js/chatScript.js" defer></script>
 </body>
 
 </html>

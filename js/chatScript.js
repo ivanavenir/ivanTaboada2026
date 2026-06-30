@@ -2,7 +2,7 @@ const form = document.querySelector("#chat-form");
 const input = document.querySelector("#user-input");
 const chatBox = document.querySelector("#chat-box");
 
-//DETECTAR SI LA PETICION DEL USUARIO ES SOBRE EL CLIMA O TEMPERATURA
+// DETECTAR SI LA PETICION DEL USUARIO ES SOBRE EL CLIMA O TEMPERATURA
 function normalizeWeatherMessage(message) {
   const lower = message.toLowerCase();
   if (
@@ -25,12 +25,18 @@ form.addEventListener("submit", async (e) => {
   let message = input.value.trim();
   if (!message) return;
 
+  // Guardamos el texto original para mostrarlo en la interfaz del usuario
+  const originalMessage = message; 
+  
+  // Normalizamos el mensaje que se enviará a la API externa
   message = normalizeWeatherMessage(message);
 
-  addMessage("user", input.value.trim()); 
+  // Mostramos en pantalla lo que el usuario escribió originalmente
+  addMessage("user", originalMessage); 
   input.value = "";
 
   try {
+    // Apunta correctamente a tu ruta de la API en el backend
     const res = await fetch("/api/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
