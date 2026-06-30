@@ -33,6 +33,12 @@
                         <span class="label-fixed typewriter desc">PIANO DECAY</span>
                         <input type="range" id="piano-decay" min="0.1" max="2.0" step="0.1" value="0.5">
                     </div>
+
+                    <div class="control-group">
+                        <span class="label-fixed typewriter desc">DRUM PITCH</span>
+                        <input type="range" id="drum-pitch-control" class="knob drum-pitch-slider" min="0.5" max="2.0"
+                            step="0.05" value="1.0">
+                    </div>
                 </div>
 
                 <div class="sequencer-wrapper">
@@ -64,17 +70,12 @@
                             <input type="range" class="knob drum-pitch-slider" data-row="2" min="1000" max="15000"
                                 value="10000">
                         </div>
-                        <div class="knob-group">
-                            <label class="label-fixed-knob typewriter desc">D-PITCH</label>
-                            <input type="range" id="drum-pitch-control" class="knob drum-pitch-slider" min="0.5"
-                                max="2.0" step="0.05" value="1.0">
-                        </div>
                     </div>
                 </div>
 
                 <div class="piano-roll-container">
                     <div class="piano-roll-header">
-                        <h3 class="typewriter desc">SYNTH UNIT</h3>
+                        <h3 class="typewriter desc">PIANO ROLL</h3>
                     </div>
                     <div class="piano-roll-wrapper">
                         <div class="piano-keys-sidebar">

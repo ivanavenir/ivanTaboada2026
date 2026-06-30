@@ -2,12 +2,9 @@ import { getLocalResponse } from './localResponses.js';
 import OpenAI from "openai";
 
 export default async function handler(req, res) {
-  // 1. Solo permitir POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
-
-  // 2. Forzar la lectura de tu variable específica
   const apiKey = process.env.GROQ_API_KEY;
 
   if (!apiKey) {
@@ -15,7 +12,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ text: "Error de configuración: API Key no encontrada." });
   }
 
-  // 3. Configuración manual del cliente para Groq
   const client = new OpenAI({
     apiKey: apiKey, // Aquí le pasamos tu variable directamente
     baseURL: "https://api.groq.com/openai/v1", // Importante para que no intente ir a OpenAI

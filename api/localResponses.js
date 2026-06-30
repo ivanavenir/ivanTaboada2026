@@ -5,13 +5,14 @@ export const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 // --- PALABRAS CLAVE (KEYWORDS) ---
 export const creatorKeywords = ["quien te creo", "quien es tu creador", "quien te programo", "who created you", "who is your creator"];
 export const ageKeywords = ["cuantos años tienes", "tu edad", "how old are you", "your age"];
+export const birthdayKeywords = ["cuando es tu cumpleaños", "fecha de cumpleaños", "cuando cumples", "when is your birthday", "birthday"]; // <-- AÑADIDA
 export const petKeywords = ["tienes mascotas", "mascotas", "do you have pets", "pet names"];
 export const moodKeywords = ["como estas", "como te sientes", "how are you", "how are you doing"];
 export const foodKeywords = ["comida favorita", "que te gusta comer", "favorite food", "what do you like to eat"];
 export const musicKeywords = ["musica favorita", "que musica escuchas", "favorite music", "what music do you like"];
 export const locationKeywords = ["de donde eres", "donde vives", "where are you from", "where do you live"];
 export const goodbyeKeywords = ["adios", "chao", "hasta luego", "bye", "goodbye", "see you"];
-export const hobbiesKeywords = ["que te gusta hacer", "cuales son tus hobbies", "what do you like to do", "what are your hobbies"]; // <-- CORREGIDO: Añadida
+export const hobbiesKeywords = ["que te gusta hacer", "cuales son tus hobbies", "what do you like to do", "what are your hobbies"]; 
 export const nameKeywords = ["como te llamas", "tu nombre", "what is your name", "your name"];
 
 // --- DICCIONARIO DE RESPUESTAS ---
@@ -39,6 +40,10 @@ const responses = {
     hobbies: {
         es: ["Me encanta crear música, especialmente trap!", "Disfruto mucho jugar videojuegos.", "Programar es mi pasatiempo favorito."],
         en: ["I love creating music, especially trap!", "I really enjoy playing video games.", "Programming is my favorite hobby."]
+    },
+    birthday: { // <-- AÑADIDA
+        es: ["Mi cumpleaños es el 18 de octubre.", "¡Celebro mi cumpleaños el 18 de octubre!"],
+        en: ["My birthday is October 18th.", "I celebrate my birthday on October 18th!"]
     }
 };
 
@@ -52,7 +57,7 @@ function normalizeMessage(message) {
 
 function detectLanguage(message) {
     const normalized = normalizeMessage(message);
-    const englishPatterns = ["what", "how", "who", "your", "time", "weather", "age", "old", "bye", "live", "eat", "hobbies", "pets"];
+    const englishPatterns = ["what", "how", "who", "your", "time", "weather", "age", "old", "bye", "live", "eat", "hobbies", "pets", "birthday"]; // <-- Se añadió birthday
     return englishPatterns.some(word => normalized.includes(word)) ? "en" : "es";
 }
 
@@ -68,6 +73,7 @@ export async function getLocalResponse(userMessage) {
     // Mapeo de detecciones
     const isName = nameKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isAge = ageKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
+    const isBirthday = birthdayKeywords.some(k => normalizedMessage.includes(normalizeMessage(k))); // <-- AÑADIDA
     const isPet = petKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isCreator = creatorKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
     const isMood = moodKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
@@ -78,12 +84,12 @@ export async function getLocalResponse(userMessage) {
     const isHobby = hobbiesKeywords.some(k => normalizedMessage.includes(normalizeMessage(k)));
 
     let respuesta = null;
-
-    // Lógica de Selección
     if (isName) {
         respuesta = lang === "en" ? "My name is Ivan!" : "Me puedes llamar Iván.";
     } else if (isAge) {
         respuesta = lang === "en" ? "I am 24 years old." : "Tengo 24 años.";
+    } else if (isBirthday) { // <-- AÑADIDA
+        respuesta = getRandom(responses.birthday[lang]);
     } else if (isPet) {
         respuesta = lang === "en" 
             ? "I have a kitty named Ophelia and two doggies: Kyoto and Akira!" 
